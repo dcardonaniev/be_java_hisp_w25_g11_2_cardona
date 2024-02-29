@@ -19,7 +19,7 @@ public class ProductDTO {
     @Size(message = "La longitud del nombre del producto no puede superar los 40 caracteres", max = 40)
     @Pattern(regexp = "^[a-zA-Z0-9 ]*$",message = "El nombre del producto no puede poseer caracteres especiales")
     @JsonProperty("product_name")
-    private String productName;
+    private String name;
 
 
     @NotBlank(message = "El tipo no puede estar vacío")

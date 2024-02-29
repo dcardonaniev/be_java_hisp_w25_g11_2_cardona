@@ -29,11 +29,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -117,6 +120,24 @@ public class SellerPostIntegrationTests {
                 .andReturn();
 
         assertEquals(responseJson, response.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testPostNewProductReturnsInvalidRequestFormat() throws Exception {
+        String payloadJson = "{}";
+
+        mockMvc.perform(post("/products/post")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payloadJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.messages").isArray())
+                .andExpect(jsonPath("$.messages", hasSize(4)))
+                .andExpect(jsonPath("$.messages", hasItem("La fecha no puede estar vacía.")))
+                .andExpect(jsonPath("$.messages", hasItem("El precio no puede estar vacío")))
+                .andExpect(jsonPath("$.messages", hasItem("El  id no puede estar vacío")))
+                .andExpect(jsonPath("$.messages", hasItem("La categoria no puede estar vacío")))
+                .andReturn();
     }
 
     @Test
