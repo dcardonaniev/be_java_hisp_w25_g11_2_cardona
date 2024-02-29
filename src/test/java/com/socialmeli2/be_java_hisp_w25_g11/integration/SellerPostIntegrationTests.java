@@ -8,14 +8,15 @@ import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.ProductDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Product;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.ISellerPostRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,8 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -54,6 +54,9 @@ public class SellerPostIntegrationTests {
 
     @Autowired
     private ISellerRepository sellerRepository;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @BeforeEach
     public void repositorySetup() {
@@ -90,20 +93,9 @@ public class SellerPostIntegrationTests {
                 100.0
         );
 
-        SellerPostDTO responseDTO = new SellerPostDTO(
-                3,
-                0,
-                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                new ProductDTO(
-                        1,
-                        "Pista carros",
-                        "Jugueteria",
-                        "LEGO",
-                        "Varios",
-                        "Disponible por tiempo limitado"
-                ),                1,
-                100.0
-        );
+        SellerPostDTO responseDTO = modelMapper.map(payloadDTO, SellerPostDTO.class);
+        responseDTO.setPostId(0);
+        responseDTO.setDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 
         ObjectWriter writer = new ObjectMapper()
                 .configure(SerializationFeature.WRAP_ROOT_VALUE, false)
@@ -144,51 +136,24 @@ public class SellerPostIntegrationTests {
     public void testGetFollowedPostsListOK() throws Exception {
         dummySetup();
 
-        Optional<Buyer> buyer = buyerRepository.get(1);
-        assertTrue(buyer.isPresent());
-        buyer.get().setFollowed(Set.of(3, 4));
+        Optional<Buyer> optBuyer = buyerRepository.get(1);
+        assertTrue(optBuyer.isPresent());
+        Buyer buyer = optBuyer.get();
+        buyer.setFollowed(Set.of(3));
 
         Optional<Seller> optSeller1 = sellerRepository.get(3);
         assertTrue(optSeller1.isPresent());
         Seller seller1 = optSeller1.get();
         seller1.setFollowers(Set.of(1));
-        seller1.setPosts(Set.of(
-                new SellerPost(
-                        seller1.getId(),
-                        1,
-                        LocalDate.now(),
-                        new Product(
-                                1,
-                                "Figura Toy Story",
-                                "Jugueteria",
-                                "Mattel",
-                                "Azul",
-                                "Buen juguete"
-                        ),
-                        1,
-                        100.0,
-                        seller1
-                )
-        ));
+
+        SellerPost post1 = DummyUtils.createNewSellerPost(seller1);
+        seller1.setPosts(Set.of(post1));
+        SellerPostDTO expectedPost1 = modelMapper.map(post1, SellerPostDTO.class);
 
         SellerPostsListDTO expectedResponseDTO = new SellerPostsListDTO(
                 1,
                 List.of(
-                        new SellerPostDTO(
-                                3,
-                                1,
-                                LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-                                new ProductDTO(
-                                        1,
-                                        "Figura Toy Story",
-                                        "Jugueteria",
-                                        "Mattel",
-                                        "Azul",
-                                        "Buen juguete"
-                                ),
-                                1,
-                                100.0
-                        )
+                        expectedPost1
                 )
         );
 
@@ -197,12 +162,22 @@ public class SellerPostIntegrationTests {
                 .writer();
         String expectedResponseJson = writer.writeValueAsString(expectedResponseDTO);
 
-
-        MvcResult response = mockMvc.perform(get("/products/followed/{userId}/list", 1))
+        MvcResult response = mockMvc.perform(get("/products/followed/{userId}/list", buyer.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
         assertEquals(expectedResponseJson, response.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void testGetFollowedListsReturnsInvalidID() throws Exception {
+        Integer invalidUserId = 100;
+
+        mockMvc.perform(get("/products/followed/{userId}/list", invalidUserId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("No se encontró un usuario con el id 100"));
     }
 }
