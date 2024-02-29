@@ -140,9 +140,7 @@ public class SellerPostIntegrationTests {
 
         SellerPostsListDTO expectedResponseDTO = new SellerPostsListDTO(
                 1,
-                List.of(
-                        expectedPost1
-                )
+                List.of(expectedPost1)
         );
 
         ObjectWriter writer = new ObjectMapper()
@@ -153,6 +151,7 @@ public class SellerPostIntegrationTests {
         MvcResult response = mockMvc.perform(get("/products/followed/{userId}/list", buyer.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.user_id").exists())
                 .andReturn();
 
         assertEquals(expectedResponseJson, response.getResponse().getContentAsString());

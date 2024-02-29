@@ -43,9 +43,9 @@ class UserServiceTest {
     }
     @Test
     void testBuyerFollowOk() {
-        //Arrange
         Buyer buyer = new Buyer(5,"pepitoTest");
         Seller seller = new Seller(6,"sellerTest");
+
         when(buyerRepository.addFollowed(buyer,seller.getId())).thenReturn(true);
         when(sellerRepository.addFollower(seller,buyer.getId())).thenReturn(true);
         when(sellerRepository.get(seller.getId())).thenReturn(Optional.of(seller));
@@ -53,45 +53,41 @@ class UserServiceTest {
         when(buyerRepository.existing(buyer.getId())).thenReturn(true);
         when(sellerRepository.existing(seller.getId())).thenReturn(true);
 
-        //Act
         SuccessDTO result = userService.follow(buyer.getId(),seller.getId());
 
-        //Assert
         assertEquals("El usuario con id=5 ahora sigue al vendedor con id=6.",result.getMessage());
     }
     @Test
     void testSellerFollowOk() {
-        //Arrange
         Seller seller = new Seller(2,"pepitoTest");
         Seller sellerToFollow = new Seller(6,"sellerTest");
+
         when(sellerRepository.addFollowed(seller,sellerToFollow.getId())).thenReturn(true);
         when(sellerRepository.addFollower(sellerToFollow,seller.getId())).thenReturn(true);
         when(sellerRepository.get(seller.getId())).thenReturn(Optional.of(seller));
         when(sellerRepository.get(sellerToFollow.getId())).thenReturn(Optional.of(sellerToFollow));
         when(sellerRepository.existing(seller.getId())).thenReturn(true);
         when(sellerRepository.existing(sellerToFollow.getId())).thenReturn(true);
-        //Act
+
         SuccessDTO result = userService.follow(seller.getId(),sellerToFollow.getId());
-        //Assert
+
         assertEquals("El usuario con id=2 ahora sigue al vendedor con id=6.",result.getMessage());
     }
     @Test
     void testFollowNotFound() {
-        //Arrange
         Buyer buyer = new Buyer(5,"pepitoTest");
         Seller seller = new Seller(6,"sellerTest");
 
-        //Act && Assert
         assertThrows(NotFoundException.class,()-> userService.follow(buyer.getId(),seller.getId()));
     }
 
     @Test
     void testFollowBadRequest() {
-        //Arrange
         Buyer buyer = new Buyer(5,"pepitoTest");
+
         when(buyerRepository.get(buyer.getId())).thenReturn(Optional.of(buyer));
         when(buyerRepository.existing(buyer.getId())).thenReturn(true);
-        //Act && Assert
+
         assertThrows(BadRequestException.class,()-> userService.follow(buyer.getId(), buyer.getId()));
     }
 
@@ -102,18 +98,15 @@ class UserServiceTest {
      */
     @Test
     void testFollowersSellersCountOk() {
-        //arrange
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId,"SellerTest");
         seller.setFollowers(Set.of(5,4,3,2,8));
 
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
 
-        //act
         Integer followersAmountExpected = seller.getFollowers().size();
         Integer followersAmountResult = userService.followersSellersCount(sellerId).getFollowersCount();
 
-        //assert
         assertEquals(followersAmountExpected,followersAmountResult,
                 () -> String.format("El Seller con id %d tiene: %d y se esperan %d seguidores",sellerId,followersAmountResult,followersAmountExpected));
     }
@@ -125,17 +118,14 @@ class UserServiceTest {
      */
     @Test
     void testFollowersSellersCountFailWithAnNoSeller() {
-        //arrange
         Integer buyerId = 1;
         Buyer buyer = new Buyer(buyerId,"BuyerTest");
 
         when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
         when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
 
-        //act
         Class<BadRequestException> exceptionExpected = BadRequestException.class;
 
-        //assert
         assertThrows(exceptionExpected,() -> userService.followersSellersCount(buyerId));
     }
 
@@ -146,16 +136,13 @@ class UserServiceTest {
      */
     @Test
     void testFollowersSellersCountFailWithNotFoundSeller() {
-        //arrange
         Integer sellerId = 1;
 
         when(sellerRepository.get(sellerId)).thenReturn(Optional.empty());
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
 
-        //act
         Class<NotFoundException> exceptionExpected = NotFoundException.class;
 
-        //assert
         assertThrows(exceptionExpected,() -> userService.followersSellersCount(sellerId));
     }
 
@@ -163,7 +150,6 @@ class UserServiceTest {
     // Resultado: Permite continuar con normalidad
     @Test
     void testSellerUnfollowTrue() {
-        //Arrange
         Integer userId = 1;
         Integer sellerIdToUnfollow = 6;
         Seller fakeSeller = new Seller(userId, "Carolina", Set.of(2, 3), Set.of(sellerIdToUnfollow), Set.of());
@@ -174,10 +160,7 @@ class UserServiceTest {
         when(sellerRepository.existing(userId)).thenReturn(true);
         when(sellerRepository.existing(sellerIdToUnfollow)).thenReturn(true);
 
-        //Act
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
-
-        //Assert
 
         assertEquals(result.getMessage(), "El usuario con id=1 ha dejado de seguir al vendedor con id=6.");
     }
@@ -186,23 +169,19 @@ class UserServiceTest {
     // Resultado: Permite continuar con normalidad
     @Test
     void testUnfollowNotFound() {
-        //Arrange
         Buyer buyer = new Buyer(5,"pepitoTest");
         Seller seller = new Seller(6,"sellerTest");
 
-        //Act && Assert
         assertThrows(NotFoundException.class,()-> userService.unfollow(buyer.getId(),seller.getId()));
     }
 
     @Test
     void testUnfollowBadRequest() {
-        //Arrange
         Buyer buyer = new Buyer(5, "pepitoTest");
 
         when(buyerRepository.get(buyer.getId())).thenReturn(Optional.of(buyer));
         when(buyerRepository.existing(buyer.getId())).thenReturn(true);
 
-        //Act && Assert
         assertThrows(BadRequestException.class, () -> userService.unfollow(buyer.getId(), buyer.getId()));
     }
 
@@ -210,7 +189,6 @@ class UserServiceTest {
     // Resultado: Permite continuar con normalidad
     @Test
     void testBuyerUnfollowTrue() {
-        //Arrange
         Integer userId = 2;
         Integer sellerIdToUnfollow = 5;
         Buyer fakeBuyer = new Buyer(userId, "Martin", Set.of(sellerIdToUnfollow));
@@ -221,26 +199,23 @@ class UserServiceTest {
         when(buyerRepository.existing(userId)).thenReturn(true);
         when(sellerRepository.existing(sellerIdToUnfollow)).thenReturn(true);
 
-        //Act
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
 
-        //Assert
         assertEquals(result.getMessage(), "El usuario con id=2 ha dejado de seguir al vendedor con id=5.");
-
     }
 
     // T-0003: Verificar que el tipo de ordenamiento alfabético exista para los seguidores
     // Resultado: Permite continuar con normalidad.
     @Test
     void testSortFollowersValidOrder() {
-        // Arrange
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId, "seller");
         String orderAsc = "name_asc";
         String orderDesc = "name_desc";
+
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
-        // Act & Assert
+
         Assertions.assertDoesNotThrow(() -> userService.sortFollowers(sellerId, orderAsc));
         Assertions.assertDoesNotThrow(() -> userService.sortFollowers(sellerId, orderDesc));
         Assertions.assertDoesNotThrow(() -> userService.sortFollowers(sellerId, null));
@@ -250,15 +225,15 @@ class UserServiceTest {
     // Resultado: Notifica la no existencia mediante una excepción.
     @Test
     void testSortFollowersInvalidOrder() {
-        // Arrange
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId, "seller");
         String failOrderAsc = "asc";
         String failOrderDesc = "desc";
         String otherOrder = "empanada";
+
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
-        // Act & Assert
+
         Assertions.assertThrows(BadRequestException.class, () -> userService.sortFollowers(sellerId, failOrderAsc));
         Assertions.assertThrows(BadRequestException.class, () -> userService.sortFollowers(sellerId, failOrderDesc));
         Assertions.assertThrows(BadRequestException.class, () -> userService.sortFollowers(sellerId, otherOrder));
@@ -268,14 +243,14 @@ class UserServiceTest {
     // Resultado: Permite continuar con normalidad.
     @Test
     void testSortFollowedValidOrder() {
-        // Arrange
         Integer buyerId = 1;
         Buyer buyer = new Buyer(buyerId, "buyer");
         String orderAsc = "name_asc";
         String orderDesc = "name_desc";
+
         when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
         when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
-        // Act & Assert
+
         Assertions.assertDoesNotThrow(() -> userService.sortFollowed(buyerId, orderAsc));
         Assertions.assertDoesNotThrow(() -> userService.sortFollowed(buyerId, orderDesc));
         Assertions.assertDoesNotThrow(() -> userService.sortFollowed(buyerId, null));
@@ -285,15 +260,15 @@ class UserServiceTest {
     // Resultado: Notifica la no existencia mediante una excepción.
     @Test
     void testSortFollowedInvalidOrder() {
-        // Arrange
         Integer buyerId = 1;
         Buyer buyer = new Buyer(buyerId, "buyer");
         String failOrderAsc = "asc";
         String failOrderDesc = "desc";
         String otherOrder = "empanada";
+
         when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
         when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
-        // Act & Assert
+
         Assertions.assertThrows(BadRequestException.class, () -> userService.sortFollowed(buyerId, failOrderAsc));
         Assertions.assertThrows(BadRequestException.class, () -> userService.sortFollowed(buyerId, failOrderDesc));
         Assertions.assertThrows(BadRequestException.class, () -> userService.sortFollowed(buyerId, otherOrder));

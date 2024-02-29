@@ -45,7 +45,6 @@ class SellerPostServiceTest {
     private SellerPostServiceImp sellerPostService;
 
     private SellerPostsListDTO getFollowedSellersLatestPosts(String order) {
-        // Arrange
         Integer buyerId = 1;
         Integer sellerId1 = 2, sellerId2 = 3;
         Integer postId1 = 1, postId2 = 2, postId3 = 3, postId4 = 4;
@@ -140,7 +139,6 @@ class SellerPostServiceTest {
         lenient().when(modelMapper.map(post3, SellerPostDTO.class)).thenReturn(postDto3);
         lenient().when(modelMapper.map(post4, SellerPostDTO.class)).thenReturn(postDto4);
 
-        // Act
         return sellerPostService.getFollowedSellersLatestPosts(buyerId, order);
     }
 
@@ -148,15 +146,15 @@ class SellerPostServiceTest {
     //Resultado: Permite continuar con normalidad.
     @Test
     void testFollowedSellersLatestPostsValidOrder(){
-        // Arrange
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId, "seller");
         String orderAsc = "date_asc";
         String orderDesc = "date_desc";
         String noOrder = null;
+
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
-        // Act & Assert
+
         Assertions.assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, orderAsc));
         Assertions.assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, orderDesc));
         Assertions.assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, noOrder));
@@ -166,15 +164,15 @@ class SellerPostServiceTest {
     //Resultado: Notifica la no existencia mediante una excepción.
     @Test
     void testFollowedSellersLatestPostsInvalidOrder() {
-        // Arrange
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId, "seller");
         String failOrderAsc = "asc";
         String failOrderDesc = "desc";
         String otherOrder = "empanada";
+
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
-        // Act & Assert
+
         Assertions.assertThrows(BadRequestException.class, () -> sellerPostService.getFollowedSellersLatestPosts(sellerId, failOrderAsc));
         Assertions.assertThrows(BadRequestException.class, () -> sellerPostService.getFollowedSellersLatestPosts(sellerId, failOrderDesc));
         Assertions.assertThrows(BadRequestException.class, () -> sellerPostService.getFollowedSellersLatestPosts(sellerId, otherOrder));
@@ -185,14 +183,13 @@ class SellerPostServiceTest {
     // Resultado: Devuelve la lista ordenada según el criterio solicitado
     @Test
     void testFollowedSellersLatestPostsOrder() {
-        // Arrange
         String orderAsc = "date_asc";
         String orderDesc = "date_desc";
         String orderInvalid = "date_invalid";
-        // Arrange & Act
+
         List<SellerPostDTO> followedSellersPostsAsc = this.getFollowedSellersLatestPosts(orderAsc).getPosts();
         List<SellerPostDTO> followedSellersPostsDesc = this.getFollowedSellersLatestPosts(orderDesc).getPosts();
-        // Assert
+
         assertTrue(
             IntStream.range(0, followedSellersPostsAsc.size() - 1)
             .allMatch(
@@ -222,9 +219,8 @@ class SellerPostServiceTest {
     // Resultado: Permite continuar con normalidad y devuelve la lista de posts de las últimas dos semanas.
     @Test
     void testFollowedSellersLatestPostsOK() {
-        // Arrange & Act
         SellerPostsListDTO followedSellersPosts = this.getFollowedSellersLatestPosts(null);
-        // Assert
+
         assertFalse(followedSellersPosts.getPosts()
                 .stream()
                 .anyMatch(v -> LocalDate.parse(
