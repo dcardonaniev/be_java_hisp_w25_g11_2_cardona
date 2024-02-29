@@ -1,4 +1,4 @@
-package com.socialmeli2.be_java_hisp_w25_g11.integration.unitary.service.seller_post;
+package com.socialmeli2.be_java_hisp_w25_g11.unitary.service.seller_post;
 
 import com.socialmeli2.be_java_hisp_w25_g11.dto.SellerPostDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.ProductDTO;

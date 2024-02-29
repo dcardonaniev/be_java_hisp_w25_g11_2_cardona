@@ -1,4 +1,4 @@
-package com.socialmeli2.be_java_hisp_w25_g11.integration.integration;
+package com.socialmeli2.be_java_hisp_w25_g11.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;

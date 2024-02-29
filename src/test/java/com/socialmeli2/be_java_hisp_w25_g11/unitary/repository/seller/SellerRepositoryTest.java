@@ -1,4 +1,4 @@
-package com.socialmeli2.be_java_hisp_w25_g11.integration.unitary.repository.seller;
+package com.socialmeli2.be_java_hisp_w25_g11.unitary.repository.seller;
 
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;

@@ -1,4 +1,4 @@
-package com.socialmeli2.be_java_hisp_w25_g11.integration.unitary.repository.buyer;
+package com.socialmeli2.be_java_hisp_w25_g11.unitary.repository.buyer;
 
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;

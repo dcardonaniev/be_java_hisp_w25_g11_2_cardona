@@ -1,4 +1,4 @@
-package com.socialmeli2.be_java_hisp_w25_g11.integration.unitary.service.user;
+package com.socialmeli2.be_java_hisp_w25_g11.unitary.service.user;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.UserDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SuccessDTO;
