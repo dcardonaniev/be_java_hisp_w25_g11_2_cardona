@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.SellerPostDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.dto.request.ProductDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
@@ -78,20 +77,9 @@ public class SellerPostIntegrationTests {
     @Test
     public void testPostNewProductOK() throws Exception {
         dummySetup();
-        CreatePostRequestDTO payloadDTO = new CreatePostRequestDTO(
-                3,
-                LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                new ProductDTO(
-                        1,
-                        "Pista carros",
-                        "Jugueteria",
-                        "LEGO",
-                        "Varios",
-                        "Disponible por tiempo limitado"
-                ),
-                1,
-                100.0
-        );
+        Optional<Seller> seller = sellerRepository.get(3);
+        assertTrue(seller.isPresent());
+        CreatePostRequestDTO payloadDTO = DummyUtils.createCreatePostRequestDTO(seller.get());
 
         SellerPostDTO responseDTO = modelMapper.map(payloadDTO, SellerPostDTO.class);
         responseDTO.setPostId(0);
