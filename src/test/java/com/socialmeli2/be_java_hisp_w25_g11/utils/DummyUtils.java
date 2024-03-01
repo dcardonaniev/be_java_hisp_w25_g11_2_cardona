@@ -20,11 +20,11 @@ public class DummyUtils {
                 LocalDate.now(),
                 new Product(
                         1,
-                        faker.name().name(),
-                        faker.pokemon().name(),
-                        faker.brand().car(),
-                        faker.color().name(),
-                        faker.text().text(0, 15)
+                        faker.name().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.pokemon().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.brand().car().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.color().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.text().text(0, 15).replaceAll("[^a-zA-Z0-9 ]", "")
                 ),
                 faker.number().positive(),
                 faker.number().randomDouble(1, 0, 100),
@@ -38,11 +38,11 @@ public class DummyUtils {
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
                 new ProductDTO(
                         1,
-                        faker.name().name(),
-                        faker.pokemon().name(),
-                        faker.brand().car(),
-                        faker.color().name(),
-                        faker.text().text(0, 15)
+                        faker.name().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.pokemon().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.brand().car().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.color().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                        faker.text().text(0, 15).replaceAll("[^a-zA-Z0-9 ]", "")
                 ),
                 faker.number().positive(),
                 faker.number().randomDouble(1, 0, 100)

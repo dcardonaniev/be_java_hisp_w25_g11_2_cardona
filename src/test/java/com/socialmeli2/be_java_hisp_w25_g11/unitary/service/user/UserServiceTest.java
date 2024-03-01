@@ -347,4 +347,15 @@ class UserServiceTest {
 
         assertThrows(NotFoundException.class, () -> userService.sortFollowers(sellerId, order));
     }
+
+    @Test
+    @DisplayName("THROWS NOT FOUND - Verify that followed list sorting works correctly")
+    void testSortFollowedThrowsNotFound() {
+        Integer sellerId = 1;
+        String order = "NAME_ASC";
+
+        when(sellerRepository.get(sellerId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> userService.sortFollowed(sellerId, order));
+    }
 }
