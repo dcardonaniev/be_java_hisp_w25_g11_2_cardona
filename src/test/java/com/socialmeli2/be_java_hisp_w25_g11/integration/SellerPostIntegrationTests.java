@@ -26,12 +26,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -64,23 +62,11 @@ public class SellerPostIntegrationTests {
         sellerRepository.clearData();
     }
 
-    private void dummySetup() {
-        Buyer buyer1 = new Buyer(1, "Superman");
-        Buyer buyer2 = new Buyer(2, "Aquaman");
-        Seller seller1 = new Seller(3, "Batman");
-        Seller seller2 = new Seller(4, "Catwoman");
-
-        buyerRepository.createAll(List.of(buyer1, buyer2));
-        sellerRepository.createAll(List.of(seller1, seller2));
-    }
-
     @Test
     public void testPostNewProductOK() throws Exception {
-        dummySetup();
-        Optional<Seller> seller = sellerRepository.get(3);
-        assertTrue(seller.isPresent());
-        CreatePostRequestDTO payloadDTO = DummyUtils.createCreatePostRequestDTO(seller.get());
+        Seller seller = sellerRepository.create(DummyUtils.createSeller());
 
+        CreatePostRequestDTO payloadDTO = DummyUtils.createCreatePostRequestDTO(seller);
         SellerPostDTO responseDTO = modelMapper.map(payloadDTO, SellerPostDTO.class);
         responseDTO.setPostId(0);
         responseDTO.setDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -122,24 +108,17 @@ public class SellerPostIntegrationTests {
 
     @Test
     public void testGetFollowedPostsListOK() throws Exception {
-        dummySetup();
+        Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
+        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        buyer.setFollowed(Set.of(seller.getId()));
+        seller.setFollowers(Set.of(buyer.getId()));
 
-        Optional<Buyer> optBuyer = buyerRepository.get(1);
-        assertTrue(optBuyer.isPresent());
-        Buyer buyer = optBuyer.get();
-        buyer.setFollowed(Set.of(3));
-
-        Optional<Seller> optSeller1 = sellerRepository.get(3);
-        assertTrue(optSeller1.isPresent());
-        Seller seller1 = optSeller1.get();
-        seller1.setFollowers(Set.of(1));
-
-        SellerPost post1 = DummyUtils.createNewSellerPost(seller1);
-        seller1.setPosts(Set.of(post1));
-        SellerPostDTO expectedPost1 = modelMapper.map(post1, SellerPostDTO.class);
+        SellerPost post = DummyUtils.createNewSellerPost(seller);
+        seller.setPosts(Set.of(post));
+        SellerPostDTO expectedPost1 = modelMapper.map(post, SellerPostDTO.class);
 
         SellerPostsListDTO expectedResponseDTO = new SellerPostsListDTO(
-                1,
+                buyer.getId(),
                 List.of(expectedPost1)
         );
 

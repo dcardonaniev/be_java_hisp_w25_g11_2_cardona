@@ -14,12 +14,6 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ActionNotAllowedException.class)
-    public ResponseEntity<?> actionNotAllowed(ActionNotAllowedException e){
-        ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
-        return new ResponseEntity<>(exceptionDTO, HttpStatus.UNAUTHORIZED);
-    }
-
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> notFound(NotFoundException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
@@ -30,12 +24,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> badRequest(BadRequestException e){
         ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
         return new ResponseEntity<>(exceptionDTO, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(AlreadyExistsException.class)
-    public ResponseEntity<?> alreadyExists(AlreadyExistsException e){
-        ExceptionDTO exceptionDTO = new ExceptionDTO(e.getMessage());
-        return new ResponseEntity<>(exceptionDTO, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

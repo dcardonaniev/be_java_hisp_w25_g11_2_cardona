@@ -2,6 +2,7 @@ package com.socialmeli2.be_java_hisp_w25_g11.utils;
 
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.ProductDTO;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Product;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
@@ -46,6 +47,20 @@ public class DummyUtils {
                 ),
                 faker.number().positive(),
                 faker.number().randomDouble(1, 0, 100)
+        );
+    }
+
+    public static Buyer createBuyer() {
+        return new Buyer(
+                faker.number().positive(),
+                faker.name().name().replaceAll("[^a-zA-Z0-9 ]", "")
+        );
+    }
+
+    public static Seller createSeller() {
+        return new Seller(
+                faker.number().positive(),
+                faker.name().name().replaceAll("[^a-zA-Z0-9 ]", "")
         );
     }
 }

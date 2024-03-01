@@ -68,7 +68,7 @@ public class UserServiceImp implements IUserService {
         } else {
             throw new BadRequestException("El usuario con id="+userId+" no es ni comprador ni vendedor.");
         }
-        return new SuccessDTO("El usuario con id="+userId+" ahora sigue al vendedor con id="+userIdToFollow+".");
+        return new SuccessDTO("El usuario ahora sigue al vendedor");
     }
 
     @Override
@@ -139,11 +139,11 @@ public class UserServiceImp implements IUserService {
         } else {
             throw new BadRequestException("El usuario con id="+userId+" no es ni comprador ni vendedor.");
         }
-        return new SuccessDTO("El usuario con id="+userId+" ha dejado de seguir al vendedor con id="+sellerIdToUnfollow+".");
+        return new SuccessDTO("El usuario ha dejado de seguir al vendedor");
     }
 
     @Override
-    public FollowerDTO sortFollowers(Integer userId, String order) {
+    public FollowerListDTO sortFollowers(Integer userId, String order) {
         Optional<Seller> seller = sellerRepository.get(userId);
         Optional<Buyer> buyer = buyerRepository.get(userId);
         String name;
@@ -157,7 +157,7 @@ public class UserServiceImp implements IUserService {
         List<UserDTO> users = this.getSocialUsersList(userId, "followers");
 
         if (order == null) {
-            return new FollowerDTO(
+            return new FollowerListDTO(
                     userId,
                     name,
                     users
@@ -170,7 +170,7 @@ public class UserServiceImp implements IUserService {
             default -> throw new BadRequestException("Argumento invalido (order debe ser NAME_ASC o NAME_DESC)");
         };
 
-        return new FollowerDTO(
+        return new FollowerListDTO(
                 userId,
                 name,
                 users
@@ -181,7 +181,7 @@ public class UserServiceImp implements IUserService {
     }
 
     @Override
-    public FollowedDTO sortFollowed(Integer userId, String order) {
+    public FollowedListDTO sortFollowed(Integer userId, String order) {
         Optional<Buyer> buyer = buyerRepository.get(userId);
         Optional<Seller> seller = sellerRepository.get(userId);
         String name;
@@ -195,7 +195,7 @@ public class UserServiceImp implements IUserService {
         List<UserDTO> users = this.getSocialUsersList(userId, "followed");
 
         if (order == null) {
-            return new FollowedDTO(
+            return new FollowedListDTO(
                     userId,
                     name,
                     users
@@ -208,7 +208,7 @@ public class UserServiceImp implements IUserService {
             default -> throw new BadRequestException("Argumento invalido (order debe ser NAME_ASC o NAME_DESC)");
         };
 
-        return new FollowedDTO(
+        return new FollowedListDTO(
                 userId,
                 name,
                 users

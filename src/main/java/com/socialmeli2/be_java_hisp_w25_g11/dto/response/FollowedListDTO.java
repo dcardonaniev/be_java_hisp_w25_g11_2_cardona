@@ -1,7 +1,7 @@
 package com.socialmeli2.be_java_hisp_w25_g11.dto.response;
 
-import com.socialmeli2.be_java_hisp_w25_g11.dto.UserDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.socialmeli2.be_java_hisp_w25_g11.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,10 +11,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FollowerDTO {
+public class FollowedListDTO {
     @JsonProperty("user_id")
     private Integer userId;
     @JsonProperty("user_name")
     private String userName;
-    private List<UserDTO> followers;
+    @JsonProperty("followed")
+    private List<UserDTO> followed;
 }

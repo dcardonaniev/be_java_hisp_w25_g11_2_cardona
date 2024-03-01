@@ -1,8 +1,10 @@
 package com.socialmeli2.be_java_hisp_w25_g11.unitary.repository.seller;
 
+import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.SellerRepositoryImp;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -85,6 +87,14 @@ class SellerRepositoryTest {
     }
 
     @Test
+    void testUpdateSellerReturnsInexistant() {
+        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        Integer inexistantId = 100;
+
+        assertFalse(sellerRepository.update(inexistantId, seller));
+    }
+
+    @Test
     void testDeleteSellerOK() {
         Seller seller = new Seller(0, "Emmanuel");
         sellerRepository.create(seller);
@@ -104,5 +114,29 @@ class SellerRepositoryTest {
 
         assertTrue(sellerRepository.existing(0));
         assertFalse(sellerRepository.existing(1));
+    }
+
+    @Test
+    public void testAddFollowedOK() {
+        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        Seller followedSeller = DummyUtils.createSeller();
+
+        sellerRepository.addFollowed(seller, followedSeller.getId());
+
+        assertEquals(1, seller.getFollowed().size());
+        assertTrue(seller.getFollowed().contains(followedSeller.getId()));
+    }
+
+    @Test
+    public void testRemoveFollowedOK() {
+        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        Seller followedSeller = DummyUtils.createSeller();
+
+        sellerRepository.create(seller);
+        sellerRepository.addFollowed(seller, followedSeller.getId());
+        assertEquals(1, seller.getFollowed().size());
+
+        sellerRepository.removeFollowed(seller, followedSeller.getId());
+        assertEquals(0, seller.getFollowers().size());
     }
 }

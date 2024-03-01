@@ -1,6 +1,6 @@
 package com.socialmeli2.be_java_hisp_w25_g11.unitary.service.user;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.UserDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerDTO;
+import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SuccessDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
@@ -28,7 +28,8 @@ class UserServiceTest {
     private ISellerRepository sellerRepository;
     private IBuyerRepository buyerRepository;
     private ModelMapper modelMapper;
-    private IUserService userService ;
+    private IUserService userService;
+
     @BeforeAll
     public void setupBeforeAll(){
         this.buyerRepository = mock(IBuyerRepository.class);
@@ -36,12 +37,15 @@ class UserServiceTest {
         this.modelMapper = spy(new MapperUtil().modelMapper());
         this.userService = new UserServiceImp(buyerRepository,sellerRepository,modelMapper);
     }
+
     @BeforeEach
     public void setupReset(){
         reset(buyerRepository);
         reset(sellerRepository);
     }
+
     @Test
+    @DisplayName("HAPPY PATH - Verify that following functionality works correctly")
     void testBuyerFollowOk() {
         Buyer buyer = new Buyer(5,"pepitoTest");
         Seller seller = new Seller(6,"sellerTest");
@@ -55,11 +59,12 @@ class UserServiceTest {
 
         SuccessDTO result = userService.follow(buyer.getId(),seller.getId());
 
-        assertEquals("El usuario con id=5 ahora sigue al vendedor con id=6.",result.getMessage());
+        assertEquals("El usuario ahora sigue al vendedor",result.getMessage());
     }
 
 
     @Test
+    @DisplayName("HAPPY PATH - Verify that following functionality works correctly")
     void testSellerFollowOk() {
         Seller seller = new Seller(2,"pepitoTest");
         Seller sellerToFollow = new Seller(6,"sellerTest");
@@ -73,10 +78,11 @@ class UserServiceTest {
 
         SuccessDTO result = userService.follow(seller.getId(),sellerToFollow.getId());
 
-        assertEquals("El usuario con id=2 ahora sigue al vendedor con id=6.",result.getMessage());
+        assertEquals("El usuario ahora sigue al vendedor",result.getMessage());
     }
 
     @Test
+    @DisplayName("THROWS NOT FOUND - Verify that following functionality works correctly")
     void testFollowNotFound() {
         Buyer buyer = new Buyer(5,"pepitoTest");
         Seller seller = new Seller(6,"sellerTest");
@@ -85,6 +91,7 @@ class UserServiceTest {
     }
 
     @Test
+    @DisplayName("THROWS BAD REQUEST - Verify that following functionality works correctly")
     void testFollowBadRequest() {
         Buyer buyer = new Buyer(5,"pepitoTest");
 
@@ -150,11 +157,9 @@ class UserServiceTest {
 
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
 
-        assertEquals(result.getMessage(), "El usuario con id=1 ha dejado de seguir al vendedor con id=6.");
+        assertEquals(result.getMessage(), "El usuario ha dejado de seguir al vendedor");
     }
 
-    //T-0002: Notifica la no existencia con un excepción.
-    // Resultado: Permite continuar con normalidad
     @Test
     @DisplayName("THROW NOT FOUND - Verify that unfollow function works correctly")
     void testUnfollowThrowsNotFoundOnInexistantID() {
@@ -190,7 +195,7 @@ class UserServiceTest {
 
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
 
-        assertEquals(result.getMessage(), "El usuario con id=2 ha dejado de seguir al vendedor con id=5.");
+        assertEquals(result.getMessage(), "El usuario ha dejado de seguir al vendedor");
     }
 
     @Test
@@ -291,7 +296,7 @@ class UserServiceTest {
         when(modelMapper.map(fakeUser2, UserDTO.class)).thenReturn(fakeUserDto2);
         when(modelMapper.map(fakeUser3, UserDTO.class)).thenReturn(fakeUserDto3);
 
-        FollowerDTO followersInfo = userService.sortFollowers(sellerId, order);
+        FollowerListDTO followersInfo = userService.sortFollowers(sellerId, order);
 
         assertEquals("Armando", followersInfo.getFollowers().get(0).getName());
         assertEquals("Benito", followersInfo.getFollowers().get(1).getName());
@@ -330,7 +335,7 @@ class UserServiceTest {
         when(modelMapper.map(fakeUser2, UserDTO.class)).thenReturn(fakeUserDto2);
         when(modelMapper.map(fakeUser3, UserDTO.class)).thenReturn(fakeUserDto3);
 
-        FollowerDTO followersInfo = userService.sortFollowers(sellerId, order);
+        FollowerListDTO followersInfo = userService.sortFollowers(sellerId, order);
 
         assertEquals("Carlos", followersInfo.getFollowers().get(0).getName());
         assertEquals("Benito", followersInfo.getFollowers().get(1).getName());

@@ -1,8 +1,10 @@
 package com.socialmeli2.be_java_hisp_w25_g11.unitary.repository.buyer;
 
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +36,7 @@ class BuyerRepositoryTest {
     }
 
     @Test
-    void testCreateAllOk() {
+    void testCreateAllOK() {
         List<Buyer> buyers = List.of(
                 new Buyer(1, "Buyer 1"),
                 new Buyer(2, "Buyer 2"),
@@ -71,7 +73,7 @@ class BuyerRepositoryTest {
     }
 
     @Test
-    void testUpdateOk() {
+    void testUpdateOK() {
         Integer buyerId = 1;
         Buyer buyer = new Buyer(buyerId, "Buyer 1");
         Buyer updatedBuyer = new Buyer(buyerId, "Buyer 1 updated");
@@ -84,7 +86,15 @@ class BuyerRepositoryTest {
     }
 
     @Test
-    void testDeleteOk() {
+    void testUpdateSellerReturnsInexistant() {
+        Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
+        Integer inexistantId = 100;
+
+        assertFalse(buyerRepository.update(inexistantId, buyer));
+    }
+
+    @Test
+    void testDeleteOK() {
         Integer buyerId = 1;
         List<Buyer> buyers = List.of(
                 new Buyer(1, "Buyer 1"),
@@ -102,7 +112,7 @@ class BuyerRepositoryTest {
     }
 
     @Test
-    void testExistingOk() {
+    void testExistingOK() {
         Integer buyerId = 1;
         Integer nonExistantId = 100;
         Buyer buyer = new Buyer(buyerId, "Buyer 1");

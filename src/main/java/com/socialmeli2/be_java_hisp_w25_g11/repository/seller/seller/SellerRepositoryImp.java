@@ -64,7 +64,6 @@ public class SellerRepositoryImp implements ISellerRepository {
     public Boolean addFollowed(Seller user, Integer userId) {
         user.getFollowed().add(userId);
         return update(user.getId(),user);
-
     }
 
     @Override

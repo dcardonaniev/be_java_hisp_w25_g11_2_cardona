@@ -1,8 +1,8 @@
 package com.socialmeli2.be_java_hisp_w25_g11.controller;
 
-import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowedDTO;
+import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowedListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerCountDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerDTO;
+import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SuccessDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.service.user.IUserService;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/followers/list")
-    public ResponseEntity<FollowerDTO>  followersList(
+    public ResponseEntity<FollowerListDTO>  followersList(
         @PathVariable Integer userId,
         @RequestParam(required = false) String order
     ) {
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/followed/list")
-    public ResponseEntity<FollowedDTO> followedList(
+    public ResponseEntity<FollowedListDTO> followedList(
         @PathVariable Integer userId,
         @RequestParam(required = false) String order
     ) {
