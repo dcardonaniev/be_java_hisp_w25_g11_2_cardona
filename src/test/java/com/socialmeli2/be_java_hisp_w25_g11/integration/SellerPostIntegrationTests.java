@@ -13,7 +13,8 @@ import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.ISellerPostRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
-import com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ValidationMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -29,8 +30,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages.INVALID_DATE_ORDER_ARGUMENT;
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages.NON_EXISTENT_USER;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.INVALID_DATE_ORDER_ARGUMENT;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.NON_EXISTENT_USER;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ValidationMessages.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -102,10 +104,10 @@ public class SellerPostIntegrationTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.messages").isArray())
                 .andExpect(jsonPath("$.messages", hasSize(4)))
-                .andExpect(jsonPath("$.messages", hasItem("La fecha no puede estar vacía.")))
-                .andExpect(jsonPath("$.messages", hasItem("El precio no puede estar vacío")))
-                .andExpect(jsonPath("$.messages", hasItem("El  id no puede estar vacío")))
-                .andExpect(jsonPath("$.messages", hasItem("La categoria no puede estar vacío")))
+                .andExpect(jsonPath("$.messages", hasItem(ValidationMessages.DATE_CANNOT_BE_EMPTY)))
+                .andExpect(jsonPath("$.messages", hasItem(ValidationMessages.PRICE_CANNOT_BE_EMPTY)))
+                .andExpect(jsonPath("$.messages", hasItem(ValidationMessages.USER_ID_CANNOT_BE_EMPTY)))
+                .andExpect(jsonPath("$.messages", hasItem(ValidationMessages.CATEGORY_CANNOT_BE_EMPTY)))
                 .andReturn();
     }
 

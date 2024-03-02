@@ -1,7 +1,7 @@
 package com.socialmeli2.be_java_hisp_w25_g11.utils;
 
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.dto.request.ProductDTO;
+import com.socialmeli2.be_java_hisp_w25_g11.dto.ProductDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Product;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;

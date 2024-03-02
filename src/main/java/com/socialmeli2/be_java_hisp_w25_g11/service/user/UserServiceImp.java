@@ -6,17 +6,17 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.BadRequestException;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.NotFoundException;
-import com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages;
-import com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.SuccessMessages;
 import org.modelmapper.ModelMapper;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages.*;
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages.SUCCESFUL_FOLLOW_ACTION;
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages.SUCCESFUL_UNFOLLOW_ACTION;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.*;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.SuccessMessages.SUCCESFUL_FOLLOW_ACTION;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.SuccessMessages.SUCCESFUL_UNFOLLOW_ACTION;
 
 @Service
 public class UserServiceImp implements IUserService {

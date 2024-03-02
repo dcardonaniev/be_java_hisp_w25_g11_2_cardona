@@ -12,7 +12,7 @@ import com.socialmeli2.be_java_hisp_w25_g11.exception.NotFoundException;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.ISellerPostRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages.*;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.*;
 
 @Service
 public class SellerPostServiceImp implements ISellerPostService {

@@ -1,4 +1,4 @@
-package com.socialmeli2.be_java_hisp_w25_g11.utils;
+package com.socialmeli2.be_java_hisp_w25_g11.utils.messages;
 
 import lombok.Getter;
 

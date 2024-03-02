@@ -12,7 +12,7 @@ import com.socialmeli2.be_java_hisp_w25_g11.service.user.UserServiceImp;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.MapperUtil;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.SuccessMessages;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
