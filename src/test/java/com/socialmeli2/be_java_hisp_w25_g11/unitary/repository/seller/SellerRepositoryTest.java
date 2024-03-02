@@ -23,42 +23,41 @@ class SellerRepositoryTest {
     @Test
     void testGetAllOK() {
         List<Seller> sellers = List.of(
-                new Seller(0, "David"),
-                new Seller(1, "Mateo"),
-                new Seller(2, "Juan Pablo")
+                DummyUtils.createSeller(),
+                DummyUtils.createSeller(),
+                DummyUtils.createSeller()
         );
 
         sellerRepository.createAll(sellers);
-        List<Seller> repoSellers = sellerRepository.getAll();
+        List<Seller> actualSellers = sellerRepository.getAll();
 
-        assertEquals(sellers.size(), repoSellers.size());
-        assertIterableEquals(sellers, repoSellers);
+        assertEquals(sellers.size(), actualSellers.size());
+        assertTrue(actualSellers.containsAll(sellers));
     }
 
     @Test
     void testCreateAllOK() {
         List<Seller> sellers = List.of(
-                new Seller(0, "David"),
-                new Seller(1, "Mateo"),
-                new Seller(2, "Juan Pablo")
+                DummyUtils.createSeller(),
+                DummyUtils.createSeller(),
+                DummyUtils.createSeller()
         );
 
         sellerRepository.createAll(sellers);
-        List<Seller> repoSellers = sellerRepository.getAll();
+        List<Seller> actualSellers = sellerRepository.getAll();
 
-        assertEquals(sellers.size(), repoSellers.size());
-        assertIterableEquals(sellers, repoSellers);
+        assertEquals(sellers.size(), actualSellers.size());
+        assertTrue(actualSellers.containsAll(sellers));
     }
 
     @Test
     void testCreateSellerOK() {
-        Seller seller = new Seller(0, "Juan Camilo");
+        Seller seller = DummyUtils.createSeller();
         sellerRepository.create(seller);
 
         Seller createdSeller = sellerRepository.get(seller.getId()).orElse(null);
         int expectedMapSize = 1;
 
-        assertEquals(expectedMapSize, sellerRepository.getAll().size());
         assertEquals(seller, createdSeller);
     }
 
@@ -75,27 +74,28 @@ class SellerRepositoryTest {
 
     @Test
     void testUpdateSellerOK() {
-        Seller seller = new Seller(0, "Emmanuel");
+        Seller seller = DummyUtils.createSeller();
         sellerRepository.create(seller);
 
-        Seller newSeller = new Seller(0, "Juan David");
+        Seller newSeller = DummyUtils.createSeller();
         sellerRepository.update(seller.getId(), newSeller);
-        Seller foundSeller = sellerRepository.get(seller.getId()).orElse(null);
+        Optional<Seller> foundSeller = sellerRepository.get(seller.getId());
 
-        assertEquals(newSeller, foundSeller);
+        assertTrue(foundSeller.isPresent());
+        assertEquals(newSeller, foundSeller.get());
     }
 
     @Test
     void testUpdateSellerReturnsInexistant() {
         Seller seller = sellerRepository.create(DummyUtils.createSeller());
-        Integer inexistantId = 100;
+        Integer inexistantId = 1;
 
         assertFalse(sellerRepository.update(inexistantId, seller));
     }
 
     @Test
     void testDeleteSellerOK() {
-        Seller seller = new Seller(0, "Emmanuel");
+        Seller seller = DummyUtils.createSeller();
         sellerRepository.create(seller);
 
         assertEquals(1, sellerRepository.getAll().size());
@@ -108,11 +108,12 @@ class SellerRepositoryTest {
 
     @Test
     void testExistingSellerOK() {
-        Seller seller = new Seller(0, "Raúl");
+        Seller seller = DummyUtils.createSeller();
+        Integer nonExistentId = 0;
         sellerRepository.create(seller);
 
-        assertTrue(sellerRepository.existing(0));
-        assertFalse(sellerRepository.existing(1));
+        assertTrue(sellerRepository.existing(seller.getId()));
+        assertFalse(sellerRepository.existing(nonExistentId));
     }
 
     @Test

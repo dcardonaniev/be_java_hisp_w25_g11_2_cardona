@@ -19,17 +19,32 @@ public class DummyUtils {
                 seller.getId(),
                 faker.number().positive(),
                 LocalDate.now(),
-                new Product(
-                        1,
-                        faker.name().name().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.pokemon().name().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.brand().car().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.color().name().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.text().text(0, 15).replaceAll("[^a-zA-Z0-9 ]", "")
-                ),
+                createProduct(),
                 faker.number().positive(),
                 faker.number().randomDouble(1, 0, 100),
                 seller
+        );
+    }
+
+    public static Product createProduct() {
+        return new Product(
+                faker.number().positive(),
+                faker.name().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.pokemon().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.brand().car().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.color().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.text().text(0, 15).replaceAll("[^a-zA-Z0-9 ]", "")
+        );
+    }
+
+    public static ProductDTO createProductDTO() {
+        return new ProductDTO(
+                faker.number().positive(),
+                faker.name().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.pokemon().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.brand().car().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.color().name().replaceAll("[^a-zA-Z0-9 ]", ""),
+                faker.text().text(0, 15).replaceAll("[^a-zA-Z0-9 ]", "")
         );
     }
 
@@ -37,14 +52,7 @@ public class DummyUtils {
         return new CreatePostRequestDTO(
                 seller.getId(),
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                new ProductDTO(
-                        1,
-                        faker.name().name().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.pokemon().name().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.brand().car().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.color().name().replaceAll("[^a-zA-Z0-9 ]", ""),
-                        faker.text().text(0, 15).replaceAll("[^a-zA-Z0-9 ]", "")
-                ),
+                createProductDTO(),
                 faker.number().positive(),
                 faker.number().randomDouble(1, 0, 100)
         );
