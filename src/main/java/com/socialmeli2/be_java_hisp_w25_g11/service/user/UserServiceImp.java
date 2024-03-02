@@ -148,8 +148,6 @@ public class UserServiceImp implements IUserService {
 
             sellerRepository.removeFollowed((Seller) user,sellerIdToUnfollow);
             sellerRepository.removeFollower((Seller) userToUnfollow,userId);
-        } else {
-            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
         }
 
         return new SuccessDTO(SuccessMessages.build(SUCCESFUL_UNFOLLOW_ACTION));
@@ -161,7 +159,7 @@ public class UserServiceImp implements IUserService {
         Optional<Buyer> buyer = buyerRepository.get(userId);
         String name;
         if (buyer.isPresent())
-            throw new NotFoundException(ErrorMessages.build(BUYER_CANNOT_HAVE_FOLLOWERS, userId));
+            throw new BadRequestException(ErrorMessages.build(BUYER_CANNOT_HAVE_FOLLOWERS, userId));
         else if (seller.isPresent())
             name = seller.get().getName();
         else

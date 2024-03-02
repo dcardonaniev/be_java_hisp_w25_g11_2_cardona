@@ -1,5 +1,6 @@
 package com.socialmeli2.be_java_hisp_w25_g11.unitary.service.user;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.UserDTO;
+import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowedListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SuccessDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
@@ -164,10 +165,10 @@ class UserServiceTest {
     @Test
     @DisplayName("THROW NOT FOUND - Verify that unfollow function works correctly")
     void testUnfollowThrowsNotFoundOnInexistantID() {
-        Buyer buyer = new Buyer(5,"pepitoTest");
-        Seller seller = new Seller(6,"sellerTest");
+        Integer inexistentUserId = 1;
+        Integer inexistentSellerId = 2;
 
-        assertThrows(NotFoundException.class, () -> userService.unfollow(buyer.getId(),seller.getId()));
+        assertThrows(NotFoundException.class, () -> userService.unfollow(inexistentUserId, inexistentSellerId));
     }
 
     @Test
@@ -307,40 +308,45 @@ class UserServiceTest {
     @DisplayName("HAPPY PATH - Verify that followed list sorting works correctly")
     @Test
     void testSortFollowedOK() {
-        Integer sellerId = 1;
-        Integer fakeUserId1 = 5, fakeUserId2 = 6, fakeUserId3 = 7;
+        Integer userId = 1;
+        Integer sellerId1 = 5, sellerId2 = 6, sellerId3 = 7;
         String order = "NAME_DESC";
 
-        Buyer fakeUser1 = new Buyer(fakeUserId1, "Armando");
-        Buyer fakeUser2 = new Buyer(fakeUserId2, "Benito");
-        Buyer fakeUser3 = new Buyer(fakeUserId3, "Carlos");
-        Seller seller = new Seller(
-                1,
-                "Vendedor #1",
-                new HashSet<>(List.of(fakeUserId1, fakeUserId2, fakeUserId3)),
-                new HashSet<>(),
-                new HashSet<>()
-        );
+        Buyer buyer = new Buyer(userId, "Batman", new HashSet<>(Set.of(sellerId1, sellerId2, sellerId3)));
+        Seller seller1 = new Seller(sellerId1, "Benito");
+        Seller seller2 = new Seller(sellerId2, "Armando");
+        Seller seller3 = new Seller(sellerId3, "Carlos");
 
-        UserDTO fakeUserDto1 = new UserDTO(fakeUser1.getId(), fakeUser1.getName());
-        UserDTO fakeUserDto2 = new UserDTO(fakeUser2.getId(), fakeUser2.getName());
-        UserDTO fakeUserDto3 = new UserDTO(fakeUser3.getId(), fakeUser3.getName());
+        UserDTO fakeUserDto1 = new UserDTO(seller1.getId(), seller1.getName());
+        UserDTO fakeUserDto2 = new UserDTO(seller2.getId(), seller2.getName());
+        UserDTO fakeUserDto3 = new UserDTO(seller3.getId(), seller3.getName());
 
-        when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
-        when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
-        when(buyerRepository.get(fakeUserId1)).thenReturn(Optional.of(fakeUser1));
-        when(buyerRepository.get(fakeUserId2)).thenReturn(Optional.of(fakeUser2));
-        when(buyerRepository.get(fakeUserId3)).thenReturn(Optional.of(fakeUser3));
+        when(sellerRepository.get(userId)).thenReturn(Optional.empty());
+        when(buyerRepository.get(userId)).thenReturn(Optional.of(buyer));
+        when(sellerRepository.get(sellerId1)).thenReturn(Optional.of(seller1));
+        when(sellerRepository.get(sellerId2)).thenReturn(Optional.of(seller2));
+        when(sellerRepository.get(sellerId3)).thenReturn(Optional.of(seller3));
 
-        when(modelMapper.map(fakeUser1, UserDTO.class)).thenReturn(fakeUserDto1);
-        when(modelMapper.map(fakeUser2, UserDTO.class)).thenReturn(fakeUserDto2);
-        when(modelMapper.map(fakeUser3, UserDTO.class)).thenReturn(fakeUserDto3);
+        when(modelMapper.map(seller1, UserDTO.class)).thenReturn(fakeUserDto1);
+        when(modelMapper.map(seller2, UserDTO.class)).thenReturn(fakeUserDto2);
+        when(modelMapper.map(seller3, UserDTO.class)).thenReturn(fakeUserDto3);
 
-        FollowerListDTO followersInfo = userService.sortFollowers(sellerId, order);
+        FollowedListDTO followersInfo = userService.sortFollowed(userId, order);
 
-        assertEquals("Carlos", followersInfo.getFollowers().get(0).getName());
-        assertEquals("Benito", followersInfo.getFollowers().get(1).getName());
-        assertEquals("Armando", followersInfo.getFollowers().get(2).getName());
+        assertEquals("Carlos", followersInfo.getFollowed().get(0).getName());
+        assertEquals("Benito", followersInfo.getFollowed().get(1).getName());
+        assertEquals("Armando", followersInfo.getFollowed().get(2).getName());
+    }
+
+    @DisplayName("HAPPY PATH - Verify that followed list sorting works correctly")
+    @Test
+    void testSortFollowedReturnsNotFound() {
+        Integer inexistentUserId = 100;
+
+        when(buyerRepository.get(inexistentUserId)).thenReturn(Optional.empty());
+        when(sellerRepository.get(inexistentUserId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> userService.sortFollowed(inexistentUserId, null));
     }
 
     @Test
