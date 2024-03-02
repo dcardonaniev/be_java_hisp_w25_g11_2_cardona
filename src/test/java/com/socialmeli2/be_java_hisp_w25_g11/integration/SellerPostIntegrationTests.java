@@ -10,9 +10,10 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.ISellerPostRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -28,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages.NON_EXISTENT_USER;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -144,6 +146,6 @@ public class SellerPostIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("No se encontró un usuario con el id 100"));
+                .andExpect(jsonPath("$.message").value(ErrorMessages.build(NON_EXISTENT_USER, invalidUserId)));
     }
 }

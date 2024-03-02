@@ -1,9 +1,8 @@
 package com.socialmeli2.be_java_hisp_w25_g11.unitary.repository.seller;
 
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.SellerRepositoryImp;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

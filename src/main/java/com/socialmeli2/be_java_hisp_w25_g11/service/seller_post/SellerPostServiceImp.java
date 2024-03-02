@@ -10,14 +10,17 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.BadRequestException;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.NotFoundException;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.ISellerPostRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages.*;
 
 @Service
 public class SellerPostServiceImp implements ISellerPostService {
@@ -42,7 +45,7 @@ public class SellerPostServiceImp implements ISellerPostService {
     public SellerPostDTO createPost(CreatePostRequestDTO request) {
         Optional<Seller> seller = sellerRepository.get(request.getUserId());
         if (seller.isEmpty())
-            throw new NotFoundException("No existe un vendedor con ese ID");
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_SELLER, request.getUserId()));
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH);
         SellerPost sellerPost = new SellerPost(
@@ -71,7 +74,7 @@ public class SellerPostServiceImp implements ISellerPostService {
             posts = getMergedPostsList(buyer.get().getFollowed());
         else if (seller.isPresent())
             posts = getMergedPostsList(seller.get().getFollowed());
-        else throw new NotFoundException(String.format("No se encontró un usuario con el id %d", userId));
+        else throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
 
         if (order == null) {
             return new SellerPostsListDTO(
@@ -86,7 +89,7 @@ public class SellerPostServiceImp implements ISellerPostService {
         Comparator<SellerPost> comparator = switch (order.toLowerCase()) {
             case "date_asc" -> Comparator.comparing(SellerPost::getDate);
             case "date_desc" -> Comparator.comparing(SellerPost::getDate).reversed();
-            default -> throw new BadRequestException("Argumento invalido (order debe ser DATE_ASC o DATE_DESC)");
+            default -> throw new BadRequestException(ErrorMessages.build(INVALID_DATE_ORDER_ARGUMENT));
         };
 
         return new SellerPostsListDTO(
@@ -106,7 +109,7 @@ public class SellerPostServiceImp implements ISellerPostService {
                 .map(s -> {
                     Optional<Seller> followedSeller = sellerRepository.get(s);
                     if (followedSeller.isEmpty())
-                        throw new NotFoundException("No se pudo encontrar la información del vendedor");
+                        throw new NotFoundException(ErrorMessages.build(SELLER_INFORMATION_NOT_FOUND, s));
 
                     return followedSeller
                             .get()

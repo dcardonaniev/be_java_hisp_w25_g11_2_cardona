@@ -10,7 +10,8 @@ import com.socialmeli2.be_java_hisp_w25_g11.service.user.IUserService;
 import com.socialmeli2.be_java_hisp_w25_g11.service.user.UserServiceImp;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.MapperUtil;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,7 +60,7 @@ class UserServiceTest {
 
         SuccessDTO result = userService.follow(buyer.getId(),seller.getId());
 
-        assertEquals("El usuario ahora sigue al vendedor",result.getMessage());
+        assertEquals(SuccessMessages.build(SuccessMessages.SUCCESFUL_FOLLOW_ACTION, seller.getId()), result.getMessage());
     }
 
 
@@ -78,7 +79,7 @@ class UserServiceTest {
 
         SuccessDTO result = userService.follow(seller.getId(),sellerToFollow.getId());
 
-        assertEquals("El usuario ahora sigue al vendedor",result.getMessage());
+        assertEquals(SuccessMessages.build(SuccessMessages.SUCCESFUL_FOLLOW_ACTION, sellerToFollow.getId()), result.getMessage());
     }
 
     @Test
@@ -157,7 +158,7 @@ class UserServiceTest {
 
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
 
-        assertEquals(result.getMessage(), "El usuario ha dejado de seguir al vendedor");
+        assertEquals(SuccessMessages.build(SuccessMessages.SUCCESFUL_UNFOLLOW_ACTION, fakeSellerToUnfollow.getId()), result.getMessage());
     }
 
     @Test
@@ -195,7 +196,7 @@ class UserServiceTest {
 
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
 
-        assertEquals(result.getMessage(), "El usuario ha dejado de seguir al vendedor");
+        assertEquals(SuccessMessages.build(SuccessMessages.SUCCESFUL_UNFOLLOW_ACTION, fakeSellerToUnfollow.getId()), result.getMessage());
     }
 
     @Test

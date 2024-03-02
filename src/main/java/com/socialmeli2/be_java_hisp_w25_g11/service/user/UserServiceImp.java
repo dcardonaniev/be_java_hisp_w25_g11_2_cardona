@@ -6,12 +6,17 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.BadRequestException;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.NotFoundException;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages;
 import org.modelmapper.ModelMapper;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
+
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.ErrorMessages.*;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages.SUCCESFUL_FOLLOW_ACTION;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages.SUCCESFUL_UNFOLLOW_ACTION;
 
 @Service
 public class UserServiceImp implements IUserService {
@@ -35,7 +40,7 @@ public class UserServiceImp implements IUserService {
         } else if (sellerRepository.existing(id)) {
             return sellerRepository.get(id).get();
         } else {
-            throw new NotFoundException("El usuario con id="+id+" no existe.");
+            throw new NotFoundException(ErrorMessages.build(ErrorMessages.NON_EXISTENT_USER, id));
         }
     }
 
@@ -45,58 +50,63 @@ public class UserServiceImp implements IUserService {
         Object userToFollow = getUser(userIdToFollow);
 
         if (!(userToFollow instanceof Seller)) {
-            throw new BadRequestException("El usuario a seguir debe ser un vendedor.");
+            throw new BadRequestException(ErrorMessages.build(USER_TO_FOLLOW_MUST_BE_SELLER));
         }
 
         if (userId.equals(userIdToFollow)) {
-            throw new BadRequestException("El usuario no se puede seguir a si mismo.");
+            throw new BadRequestException(ErrorMessages.build(USER_CANNOT_FOLLOW_HIMSELF));
         }
 
         if (user instanceof Buyer) {
             if (((Buyer) user).getFollowed().contains(userIdToFollow)) {
-                throw new BadRequestException("El comprador con id="+userId+" ya sigue al vendedor con id="+userIdToFollow+".");
+                throw new BadRequestException(ErrorMessages.build(USER_ALREADY_FOLLOWS_SELLER, userToFollow));
             }
+
             buyerRepository.addFollowed((Buyer) user,userIdToFollow);
             sellerRepository.addFollower((Seller) userToFollow,userId);
         } else if (user instanceof Seller) {
             if (((Seller) user).getFollowed().contains(userIdToFollow)) {
-                throw new BadRequestException("El vendedor con id="+userId+" ya sigue al vendedor con id="+userIdToFollow+".");
+                throw new BadRequestException(ErrorMessages.build(USER_ALREADY_FOLLOWS_SELLER, userToFollow));
             }
+
             sellerRepository.addFollowed((Seller) user,userIdToFollow);
             sellerRepository.addFollower((Seller) userToFollow,userId);
-
         } else {
-            throw new BadRequestException("El usuario con id="+userId+" no es ni comprador ni vendedor.");
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
         }
-        return new SuccessDTO("El usuario ahora sigue al vendedor");
+        return new SuccessDTO(SuccessMessages.build(SUCCESFUL_FOLLOW_ACTION));
     }
 
     @Override
-    public FollowerCountDTO followersSellersCount(Integer sellerId) {
-        Optional<Seller> seller = sellerRepository.get(sellerId);
+    public FollowerCountDTO followersSellersCount(Integer userId) {
+        Optional<Seller> seller = sellerRepository.get(userId);
         if(seller.isEmpty()){
-            if(buyerRepository.get(sellerId).isPresent()){
-                throw new BadRequestException("Un comprador no puede tener seguidores.");
+            if(buyerRepository.get(userId).isPresent()){
+                throw new BadRequestException(ErrorMessages.build(BUYER_CANNOT_HAVE_FOLLOWERS, userId));
             }
-            throw new NotFoundException("El vendedor con id="+sellerId+" no existe.");
+
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_SELLER, userId));
         }
+
         int followersCount = seller.get().getFollowers().size();
-        System.out.println(followersCount);
-        return new FollowerCountDTO (sellerId, seller.get().getName(), followersCount);
+        return new FollowerCountDTO (userId, seller.get().getName(), followersCount);
     }
 
     private List<UserDTO> getSocialUsersList(Integer userId, String type) {
         Optional<Buyer> buyerOptional = buyerRepository.get(userId);
         Optional<Seller> sellerOptional = sellerRepository.get(userId);
+
         if (buyerOptional.isPresent()) {
             return getSocialListHelper(buyerOptional.get().getFollowed());
-        } else if (sellerOptional.isPresent()) {
+        }
+
+        if (sellerOptional.isPresent()) {
             return type.equalsIgnoreCase("followers")
                     ? getSocialListHelper(sellerOptional.get().getFollowers())
                     : getSocialListHelper(sellerOptional.get().getFollowed());
-        } else {
-            throw new NotFoundException("No se encontró un usuario con ese ID");
         }
+
+        throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
     }
 
     private List<UserDTO> getSocialListHelper(Set<Integer> output) {
@@ -110,7 +120,7 @@ public class UserServiceImp implements IUserService {
                     else if (seller.isPresent())
                         return modelMapper.map(seller.get(), UserDTO.class);
                     else
-                        throw new NotFoundException("No se encontró uno de los IDs");
+                        throw new NotFoundException(ErrorMessages.build(LIST_USER_INFO_NOT_FOUND, v));
                 })
                 .toList();
     }
@@ -121,25 +131,28 @@ public class UserServiceImp implements IUserService {
         Object userToUnfollow = getUser(sellerIdToUnfollow);
 
         if (!(userToUnfollow instanceof Seller)) {
-            throw new BadRequestException("El usuario a dejar de seguir debe ser un vendedor.");
+            throw new BadRequestException(ErrorMessages.build(USER_TO_UNFOLLOW_MUST_BE_SELLER));
         }
 
         if (user instanceof Buyer) {
             if (!((Buyer) user).getFollowed().contains(sellerIdToUnfollow)) {
-                throw new BadRequestException("El comprador con id="+userId+" no sigue al vendedor con id="+sellerIdToUnfollow+".");
+                throw new BadRequestException(ErrorMessages.build(BUYER_DOES_NOT_FOLLOW_SELLER, userId, sellerIdToUnfollow));
             }
+
             buyerRepository.removeFollowed((Buyer) user,sellerIdToUnfollow);
             sellerRepository.removeFollower((Seller) userToUnfollow,userId);
         } else if (user instanceof Seller) {
             if (!((Seller) user).getFollowed().contains(sellerIdToUnfollow)) {
-                throw new BadRequestException("El vendedor con id="+userId+" no sigue al vendedor con id="+sellerIdToUnfollow+".");
+                throw new BadRequestException(ErrorMessages.build(SELLER_DOES_NOT_FOLLOW_SELLER, userId, sellerIdToUnfollow));
             }
+
             sellerRepository.removeFollowed((Seller) user,sellerIdToUnfollow);
             sellerRepository.removeFollower((Seller) userToUnfollow,userId);
         } else {
-            throw new BadRequestException("El usuario con id="+userId+" no es ni comprador ni vendedor.");
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
         }
-        return new SuccessDTO("El usuario ha dejado de seguir al vendedor");
+
+        return new SuccessDTO(SuccessMessages.build(SUCCESFUL_UNFOLLOW_ACTION));
     }
 
     @Override
@@ -148,11 +161,11 @@ public class UserServiceImp implements IUserService {
         Optional<Buyer> buyer = buyerRepository.get(userId);
         String name;
         if (buyer.isPresent())
-            throw new NotFoundException("Los compradores no pueden tener seguidores");
+            throw new NotFoundException(ErrorMessages.build(BUYER_CANNOT_HAVE_FOLLOWERS, userId));
         else if (seller.isPresent())
             name = seller.get().getName();
         else
-            throw new NotFoundException("No se encontró un vendedor con ese ID");
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_SELLER, userId));
 
         List<UserDTO> users = this.getSocialUsersList(userId, "followers");
 
@@ -167,7 +180,7 @@ public class UserServiceImp implements IUserService {
         Comparator<UserDTO> comparator = switch (order.toLowerCase()) {
             case "name_asc" -> Comparator.comparing(UserDTO::getName);
             case "name_desc" -> Comparator.comparing(UserDTO::getName).reversed();
-            default -> throw new BadRequestException("Argumento invalido (order debe ser NAME_ASC o NAME_DESC)");
+            default -> throw new BadRequestException(ErrorMessages.build(INVALID_NAME_ORDER_ARGUMENT));
         };
 
         return new FollowerListDTO(
@@ -190,7 +203,7 @@ public class UserServiceImp implements IUserService {
         else if (seller.isPresent())
             name = seller.get().getName();
         else
-            throw new NotFoundException("No se encontró un usuario con ese ID");
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
 
         List<UserDTO> users = this.getSocialUsersList(userId, "followed");
 
@@ -205,7 +218,7 @@ public class UserServiceImp implements IUserService {
         Comparator<UserDTO> comparator = switch (order.toLowerCase()) {
             case "name_asc" -> Comparator.comparing(UserDTO::getName);
             case "name_desc" -> Comparator.comparing(UserDTO::getName).reversed();
-            default -> throw new BadRequestException("Argumento invalido (order debe ser NAME_ASC o NAME_DESC)");
+            default -> throw new BadRequestException(ErrorMessages.build(INVALID_NAME_ORDER_ARGUMENT));
         };
 
         return new FollowedListDTO(

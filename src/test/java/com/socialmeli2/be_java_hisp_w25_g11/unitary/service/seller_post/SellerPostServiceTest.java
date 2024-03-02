@@ -10,7 +10,7 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.BadRequestException;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.NotFoundException;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.SellerRepositoryImp;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
 import com.socialmeli2.be_java_hisp_w25_g11.service.seller_post.SellerPostServiceImp;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

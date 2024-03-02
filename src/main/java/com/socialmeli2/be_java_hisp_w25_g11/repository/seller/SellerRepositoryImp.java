@@ -1,4 +1,4 @@
-package com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller;
+package com.socialmeli2.be_java_hisp_w25_g11.repository.seller;
 
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import org.springframework.stereotype.Repository;

@@ -9,8 +9,9 @@ import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
+import com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -23,6 +24,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages.SUCCESFUL_FOLLOW_ACTION;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.SuccessMessages.SUCCESFUL_UNFOLLOW_ACTION;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,7 +62,7 @@ public class UserIntegrationTests {
         mockMvc.perform(post("/users/{userId}/follow/{userIdToFollow}", userThatFollows.getId(), sellerThatIsFollowed.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("El usuario ahora sigue al vendedor"));
+                .andExpect(jsonPath("$.message").value(SuccessMessages.build(SUCCESFUL_FOLLOW_ACTION, sellerThatIsFollowed.getId())));
     }
 
     @Test
@@ -73,7 +76,7 @@ public class UserIntegrationTests {
         mockMvc.perform(post("/users/{userId}/unfollow/{userIdToFollow}", userThatFollows.getId(), sellerThatIsFollowed.getId()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("El usuario ha dejado de seguir al vendedor"));
+                .andExpect(jsonPath("$.message").value(SuccessMessages.build(SUCCESFUL_UNFOLLOW_ACTION, sellerThatIsFollowed.getId())));
     }
 
     @Test
