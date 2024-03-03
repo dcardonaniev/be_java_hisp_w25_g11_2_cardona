@@ -58,7 +58,7 @@ public class SellerPostRepositoryImp implements ISellerPostRepository {
     }
 
     @Override
-    public boolean existing(Integer id) {
+    public boolean exists(Integer id) {
         return sellerPosts.containsKey(id);
     }
 

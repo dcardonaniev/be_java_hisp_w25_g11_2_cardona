@@ -116,7 +116,7 @@ class SellerPostRepositoryTest {
             sellerPost.setPostId(1);
             sellerPostRepository.create(sellerPost);
 
-            Assertions.assertTrue(sellerPostRepository.existing(sellerPost.getPostId()));
-            Assertions.assertFalse(sellerPostRepository.existing(sellerPost.getPostId() + 1));
+            Assertions.assertTrue(sellerPostRepository.exists(sellerPost.getPostId()));
+            Assertions.assertFalse(sellerPostRepository.exists(sellerPost.getPostId() + 1));
         }
 }

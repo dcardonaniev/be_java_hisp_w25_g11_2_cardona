@@ -2,14 +2,11 @@ package com.socialmeli2.be_java_hisp_w25_g11.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Buyer {
     private Integer id;
     private String name;

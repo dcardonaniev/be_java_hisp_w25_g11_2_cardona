@@ -111,8 +111,8 @@ class SellerRepositoryTest {
         Integer nonExistentId = 0;
         sellerRepository.create(seller);
 
-        assertTrue(sellerRepository.existing(seller.getId()));
-        assertFalse(sellerRepository.existing(nonExistentId));
+        assertTrue(sellerRepository.exists(seller.getId()));
+        assertFalse(sellerRepository.exists(nonExistentId));
     }
 
     @Test

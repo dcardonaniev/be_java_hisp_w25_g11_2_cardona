@@ -10,6 +10,6 @@ public interface ICrudRepository <T, ID> {
     Optional<T> get(ID id);
     boolean update(ID id, T user);
     boolean delete(ID id);
-    boolean existing(ID id);
+    boolean exists(ID id);
     void clearData();
 }

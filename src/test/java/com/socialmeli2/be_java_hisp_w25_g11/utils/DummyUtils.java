@@ -8,7 +8,6 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.Product;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
 import net.datafaker.Faker;
-import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

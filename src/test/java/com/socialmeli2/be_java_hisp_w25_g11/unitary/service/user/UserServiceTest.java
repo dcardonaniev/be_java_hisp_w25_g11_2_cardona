@@ -56,8 +56,8 @@ class UserServiceTest {
         when(sellerRepository.addFollower(seller,buyer.getId())).thenReturn(true);
         when(sellerRepository.get(seller.getId())).thenReturn(Optional.of(seller));
         when(buyerRepository.get(buyer.getId())).thenReturn(Optional.of(buyer));
-        when(buyerRepository.existing(buyer.getId())).thenReturn(true);
-        when(sellerRepository.existing(seller.getId())).thenReturn(true);
+        when(buyerRepository.exists(buyer.getId())).thenReturn(true);
+        when(sellerRepository.exists(seller.getId())).thenReturn(true);
 
         SuccessDTO result = userService.follow(buyer.getId(),seller.getId());
 
@@ -75,8 +75,8 @@ class UserServiceTest {
         when(sellerRepository.addFollower(sellerToFollow,seller.getId())).thenReturn(true);
         when(sellerRepository.get(seller.getId())).thenReturn(Optional.of(seller));
         when(sellerRepository.get(sellerToFollow.getId())).thenReturn(Optional.of(sellerToFollow));
-        when(sellerRepository.existing(seller.getId())).thenReturn(true);
-        when(sellerRepository.existing(sellerToFollow.getId())).thenReturn(true);
+        when(sellerRepository.exists(seller.getId())).thenReturn(true);
+        when(sellerRepository.exists(sellerToFollow.getId())).thenReturn(true);
 
         SuccessDTO result = userService.follow(seller.getId(),sellerToFollow.getId());
 
@@ -98,7 +98,7 @@ class UserServiceTest {
         Buyer buyer = new Buyer(5,"pepitoTest");
 
         when(buyerRepository.get(buyer.getId())).thenReturn(Optional.of(buyer));
-        when(buyerRepository.existing(buyer.getId())).thenReturn(true);
+        when(buyerRepository.exists(buyer.getId())).thenReturn(true);
 
         assertThrows(BadRequestException.class,()-> userService.follow(buyer.getId(), buyer.getId()));
     }
@@ -154,8 +154,8 @@ class UserServiceTest {
 
         when(sellerRepository.get(userId)).thenReturn(Optional.of(fakeSeller));
         when(sellerRepository.get(sellerIdToUnfollow)).thenReturn(Optional.of(fakeSellerToUnfollow));
-        when(sellerRepository.existing(userId)).thenReturn(true);
-        when(sellerRepository.existing(sellerIdToUnfollow)).thenReturn(true);
+        when(sellerRepository.exists(userId)).thenReturn(true);
+        when(sellerRepository.exists(sellerIdToUnfollow)).thenReturn(true);
 
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
 
@@ -172,8 +172,8 @@ class UserServiceTest {
 
         when(buyerRepository.get(userId)).thenReturn(Optional.of(fakeBuyer));
         when(sellerRepository.get(sellerIdToUnfollow)).thenReturn(Optional.of(fakeSellerToUnfollow));
-        when(buyerRepository.existing(userId)).thenReturn(true);
-        when(sellerRepository.existing(sellerIdToUnfollow)).thenReturn(true);
+        when(buyerRepository.exists(userId)).thenReturn(true);
+        when(sellerRepository.exists(sellerIdToUnfollow)).thenReturn(true);
 
         SuccessDTO result = userService.unfollow(userId, sellerIdToUnfollow);
 
@@ -195,7 +195,7 @@ class UserServiceTest {
         Buyer buyer = new Buyer(5, "pepitoTest");
 
         when(buyerRepository.get(buyer.getId())).thenReturn(Optional.of(buyer));
-        when(buyerRepository.existing(buyer.getId())).thenReturn(true);
+        when(buyerRepository.exists(buyer.getId())).thenReturn(true);
 
         assertThrows(BadRequestException.class, () -> userService.unfollow(buyer.getId(), buyer.getId()));
     }

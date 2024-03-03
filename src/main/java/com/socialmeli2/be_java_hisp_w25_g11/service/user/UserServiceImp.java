@@ -35,10 +35,10 @@ public class UserServiceImp implements IUserService {
     }
 
     private Object getUser(Integer id) {
-        if (buyerRepository.existing(id)) {
-            return buyerRepository.get(id).get();
-        } else if (sellerRepository.existing(id)) {
-            return sellerRepository.get(id).get();
+        if (buyerRepository.exists(id)) {
+            return buyerRepository.get(id).orElse(null);
+        } else if (sellerRepository.exists(id)) {
+            return sellerRepository.get(id).orElse(null);
         } else {
             throw new NotFoundException(ErrorMessages.build(ErrorMessages.NON_EXISTENT_USER, id));
         }

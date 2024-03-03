@@ -53,7 +53,7 @@ public class BuyerRepositoryImp implements IBuyerRepository {
     }
 
     @Override
-    public boolean existing(Integer id) {
+    public boolean exists(Integer id) {
         return buyers.containsKey(id);
     }
 
