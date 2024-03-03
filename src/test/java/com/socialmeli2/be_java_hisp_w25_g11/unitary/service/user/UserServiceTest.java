@@ -47,7 +47,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("HAPPY PATH - Verify that following functionality works correctly")
+    @DisplayName("T-0001: HAPPY PATH - Verify that following functionality works correctly for buyers")
     void testBuyerFollowOk() {
         Buyer buyer = new Buyer(5,"pepitoTest");
         Seller seller = new Seller(6,"sellerTest");
@@ -66,7 +66,7 @@ class UserServiceTest {
 
 
     @Test
-    @DisplayName("HAPPY PATH - Verify that following functionality works correctly")
+    @DisplayName("T-0001: HAPPY PATH - Verify that following functionality works correctly for sellers")
     void testSellerFollowOk() {
         Seller seller = new Seller(2,"pepitoTest");
         Seller sellerToFollow = new Seller(6,"sellerTest");
@@ -84,7 +84,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("THROWS NOT FOUND - Verify that following functionality works correctly")
+    @DisplayName("T-0001: NOT FOUND - Verify that user with provided ID exists")
     void testFollowNotFound() {
         Buyer buyer = new Buyer(5,"pepitoTest");
         Seller seller = new Seller(6,"sellerTest");
@@ -93,7 +93,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("THROWS BAD REQUEST - Verify that following functionality works correctly")
+    @DisplayName("T-0001: BAD REQUEST - Verify that user does not try to follow himself")
     void testFollowBadRequest() {
         Buyer buyer = new Buyer(5,"pepitoTest");
 
@@ -104,7 +104,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("HAPPY PATH - Verify the amount of followers an user has is correct")
+    @DisplayName("T-0007: HAPPY PATH - Verify the amount of followers an user has is correct")
     void testFollowersSellersCountOk() {
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId,"SellerTest");
@@ -120,7 +120,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("THROW BAD REQUEST - Verify the amount of followers an user has is correct")
+    @DisplayName("T-0007: BAD REQUEST - Verify that user with provided ID is a seller")
     void testFollowersSellersCountFailWithAnNoSeller() {
         Integer buyerId = 1;
         Buyer buyer = new Buyer(buyerId,"BuyerTest");
@@ -132,7 +132,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("THROW NOT FOUND - Verify the amount of followers an user has is correct")
+    @DisplayName("T-0007: NOT FOUND - Verify that user with provided ID exists")
     void testFollowersSellersCountFailWithNotFoundSeller() {
         Integer sellerId = 1;
 
@@ -145,8 +145,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("HAPPY PATH - Verify that unfollow function works correctly")
-    void testSellerUnfollowTrue() {
+    @DisplayName("T-0002: HAPPY PATH - Verify that unfollow functionality works correctly for sellers")
+    void testSellerUnfollowOK() {
         Integer userId = 1;
         Integer sellerIdToUnfollow = 6;
         Seller fakeSeller = new Seller(userId, "Carolina", Set.of(2, 3), Set.of(sellerIdToUnfollow), Set.of());
@@ -163,28 +163,8 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("THROW NOT FOUND - Verify that unfollow function works correctly")
-    void testUnfollowThrowsNotFoundOnInexistantID() {
-        Integer inexistentUserId = 1;
-        Integer inexistentSellerId = 2;
-
-        assertThrows(NotFoundException.class, () -> userService.unfollow(inexistentUserId, inexistentSellerId));
-    }
-
-    @Test
-    @DisplayName("THROW BAD REQUEST - Verify that unfollow function works correctly")
-    void testUnfollowThrowsBadRequestOnSameIDs() {
-        Buyer buyer = new Buyer(5, "pepitoTest");
-
-        when(buyerRepository.get(buyer.getId())).thenReturn(Optional.of(buyer));
-        when(buyerRepository.existing(buyer.getId())).thenReturn(true);
-
-        assertThrows(BadRequestException.class, () -> userService.unfollow(buyer.getId(), buyer.getId()));
-    }
-
-    @Test
-    @DisplayName("HAPPY PATH - Verify that unfollow function works correctly")
-    void testUnfollowOK() {
+    @DisplayName("T-0002: HAPPY PATH - Verify that unfollow functionality works correctly for buyers")
+    void testBuyerUnfollowOK() {
         Integer userId = 2;
         Integer sellerIdToUnfollow = 5;
         Buyer fakeBuyer = new Buyer(userId, "Martin", Set.of(sellerIdToUnfollow));
@@ -201,12 +181,32 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("HAPPY PATH - Verify that follower list sorting verifies order parameter")
+    @DisplayName("T-0002: NOT FOUND - Verify that users with provided IDs exists")
+    void testUnfollowThrowsNotFoundOnInexistantID() {
+        Integer inexistentUserId = 1;
+        Integer inexistentSellerId = 2;
+
+        assertThrows(NotFoundException.class, () -> userService.unfollow(inexistentUserId, inexistentSellerId));
+    }
+
+    @Test
+    @DisplayName("T-0002: BAD REQUEST - Verify that user does not try to unfollow himself")
+    void testUnfollowThrowsBadRequestOnSameIDs() {
+        Buyer buyer = new Buyer(5, "pepitoTest");
+
+        when(buyerRepository.get(buyer.getId())).thenReturn(Optional.of(buyer));
+        when(buyerRepository.existing(buyer.getId())).thenReturn(true);
+
+        assertThrows(BadRequestException.class, () -> userService.unfollow(buyer.getId(), buyer.getId()));
+    }
+
+    @Test
+    @DisplayName("T-0003: HAPPY PATH - Verify that follower list name sorting handles order parameter correctly")
     void testSortFollowersValidOrderOK() {
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId, "seller");
-        String orderAsc = "name_asc";
-        String orderDesc = "name_desc";
+        String orderAsc = "NAME_ASC";
+        String orderDesc = "NAME_DESC";
 
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
@@ -217,13 +217,13 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("THROWS BAD REQUEST - Verify that follower list sorting verifies order parameter")
+    @DisplayName("T-0003: BAD REQUEST - Verify that exceptions are raised when invalid order parameter is given")
     void testSortFollowersInvalidOrder() {
         Integer sellerId = 1;
         Seller seller = new Seller(sellerId, "seller");
-        String failOrderAsc = "asc";
-        String failOrderDesc = "desc";
-        String otherOrder = "empanada";
+        String failOrderAsc = "ASC";
+        String failOrderDesc = "DESC";
+        String otherOrder = "EMPANADA";
 
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
@@ -234,12 +234,12 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("HAPPY PATH - Verify that followed list sorting verifies order parameter")
-    void testSortFollowedValidOrder() {
+    @DisplayName("T-0003: HAPPY PATH - Verify that followed list name sorting handles order parameter correctly")
+    void testSortFollowedValidOrderOK() {
         Integer buyerId = 1;
         Buyer buyer = new Buyer(buyerId, "buyer");
-        String orderAsc = "name_asc";
-        String orderDesc = "name_desc";
+        String orderAsc = "NAME_ASC";
+        String orderDesc = "NAME_DESC";
 
         when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
         when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
@@ -250,13 +250,13 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("THROWS BAD REQUEST - Verify that followed list sorting works correctly")
+    @DisplayName("T-0003: BAD REQUEST - Verify that exceptions are raised when invalid order parameter is given")
     void testSortFollowedInvalidOrder() {
         Integer buyerId = 1;
         Buyer buyer = new Buyer(buyerId, "buyer");
-        String failOrderAsc = "asc";
-        String failOrderDesc = "desc";
-        String otherOrder = "empanada";
+        String failOrderAsc = "ASC";
+        String failOrderDesc = "DESC";
+        String otherOrder = "EMPANADA";
 
         when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
         when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
@@ -267,7 +267,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("HAPPY PATH - Verify that followers list sorting works correctly")
+    @DisplayName("T-0004: HAPPY PATH - Verify that followers list sorting works correctly")
     void testSortFollowersOK() {
         Integer sellerId = 1;
         Integer fakeUserId1 = 5, fakeUserId2 = 6, fakeUserId3 = 7;
@@ -305,7 +305,7 @@ class UserServiceTest {
         assertEquals("Carlos", followersInfo.getFollowers().get(2).getName());
     }
 
-    @DisplayName("HAPPY PATH - Verify that followed list sorting works correctly")
+    @DisplayName("T-0004: HAPPY PATH - Verify that followed list sorting works correctly")
     @Test
     void testSortFollowedOK() {
         Integer userId = 1;
@@ -338,36 +338,24 @@ class UserServiceTest {
         assertEquals("Armando", followersInfo.getFollowed().get(2).getName());
     }
 
-    @DisplayName("HAPPY PATH - Verify that followed list sorting works correctly")
+    @DisplayName("T-0004: NOT FOUND - Verify that user with provided ID exists")
     @Test
-    void testSortFollowedReturnsNotFound() {
-        Integer inexistentUserId = 100;
-
-        when(buyerRepository.get(inexistentUserId)).thenReturn(Optional.empty());
-        when(sellerRepository.get(inexistentUserId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> userService.sortFollowed(inexistentUserId, null));
-    }
-
-    @Test
-    @DisplayName("THROWS NOT FOUND - Verify that followers list sorting works correctly")
-    void testSortFollowersThrowsNotFound() {
-        Integer sellerId = 1;
-        String order = "NAME_ASC";
-
-        when(sellerRepository.get(sellerId)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> userService.sortFollowers(sellerId, order));
-    }
-
-    @Test
-    @DisplayName("THROWS NOT FOUND - Verify that followed list sorting works correctly")
     void testSortFollowedThrowsNotFound() {
-        Integer sellerId = 1;
-        String order = "NAME_ASC";
+        Integer nonExistentBuyerId = 100;
 
-        when(sellerRepository.get(sellerId)).thenReturn(Optional.empty());
+        when(buyerRepository.get(nonExistentBuyerId)).thenReturn(Optional.empty());
+        when(sellerRepository.get(nonExistentBuyerId)).thenReturn(Optional.empty());
 
-        assertThrows(NotFoundException.class, () -> userService.sortFollowed(sellerId, order));
+        assertThrows(NotFoundException.class, () -> userService.sortFollowed(nonExistentBuyerId, null));
+    }
+
+    @Test
+    @DisplayName("T-0004: NOT FOUND - Verify that user with provided ID exists")
+    void testSortFollowersThrowsNotFound() {
+        Integer nonExistentSellerId = 1;
+
+        when(sellerRepository.get(nonExistentSellerId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> userService.sortFollowers(nonExistentSellerId, null));
     }
 }

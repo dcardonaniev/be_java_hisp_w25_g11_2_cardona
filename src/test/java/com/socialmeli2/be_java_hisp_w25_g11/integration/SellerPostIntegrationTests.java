@@ -16,6 +16,7 @@ import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ValidationMessages;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,7 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
+    @DisplayName("HAPPY PATH - Verifies that the endpoint for creating a new post works correctly")
     public void testPostNewProductOK() throws Exception {
         Seller seller = sellerRepository.create(DummyUtils.createSeller());
 
@@ -93,6 +95,7 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
+    @DisplayName("THROWS BAD REQUEST - Verifies that the body of the create post request is valid")
     public void testPostNewProductReturnsInvalidRequestFormat() throws Exception {
         String payloadJson = "{}";
 
@@ -111,13 +114,14 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
+    @DisplayName("HAPPY PATH - Verifies that list of followed sellers' posts is returned correctly")
     public void testGetFollowedPostsListOK() throws Exception {
         Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
         Seller seller = sellerRepository.create(DummyUtils.createSeller());
         buyer.setFollowed(Set.of(seller.getId()));
         seller.setFollowers(Set.of(buyer.getId()));
 
-        SellerPost post = DummyUtils.createNewSellerPost(seller);
+        SellerPost post = DummyUtils.createSellerPost(seller);
         seller.setPosts(Set.of(post));
         SellerPostDTO expectedPost1 = modelMapper.map(post, SellerPostDTO.class);
 
@@ -141,6 +145,7 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
+    @DisplayName("THROWS BAD REQUEST - Verifies that the order parameter is valid")
     public void testGetFollowedPostsListReturnsInvalidOrder() throws Exception {
         Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
         String invalidOrder = "RANDOM_WORD";
@@ -154,6 +159,7 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
+    @DisplayName("THROWS NOT FOUND - Verifies that the supplied user id exists")
     public void testGetFollowedListsReturnsInvalidID() throws Exception {
         Integer invalidUserId = 100;
 

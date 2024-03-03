@@ -1,5 +1,6 @@
 package com.socialmeli2.be_java_hisp_w25_g11.utils;
 
+import com.socialmeli2.be_java_hisp_w25_g11.dto.SellerPostDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.ProductDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
@@ -7,6 +8,7 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.Product;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
 import net.datafaker.Faker;
+import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,7 +16,7 @@ import java.time.format.DateTimeFormatter;
 public class DummyUtils {
     public static final Faker faker = new Faker();
 
-    public static SellerPost createNewSellerPost(Seller seller) {
+    public static SellerPost createSellerPost(Seller seller) {
         return new SellerPost(
                 seller.getId(),
                 faker.number().positive(),
@@ -23,6 +25,24 @@ public class DummyUtils {
                 faker.number().positive(),
                 faker.number().randomDouble(1, 0, 100),
                 seller
+        );
+    }
+
+    public static SellerPostDTO createSellerPostDTO(SellerPost post) {
+        return new SellerPostDTO(
+                post.getUserId(),
+                post.getPostId(),
+                post.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                new ProductDTO(
+                        post.getProduct().getId(),
+                        post.getProduct().getName(),
+                        post.getProduct().getType(),
+                        post.getProduct().getBrand(),
+                        post.getProduct().getColor(),
+                        post.getProduct().getNotes()
+                ),
+                post.getCategory(),
+                post.getPrice()
         );
     }
 

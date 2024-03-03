@@ -13,6 +13,7 @@ import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.SuccessMessages;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ public class UserIntegrationTests {
     }
 
     @Test
+    @DisplayName("HAPPY PATH - Verifies that the follow functionality works correctly")
     public void testFollowOK() throws Exception {
         Buyer userThatFollows = buyerRepository.create(DummyUtils.createBuyer());
         Seller sellerThatIsFollowed = sellerRepository.create(DummyUtils.createSeller());
@@ -66,6 +68,7 @@ public class UserIntegrationTests {
     }
 
     @Test
+    @DisplayName("HAPPY PATH - Verifies that the unfollow functionality works correctly")
     public void testUnfollowOK() throws Exception {
         Buyer userThatFollows = buyerRepository.create(DummyUtils.createBuyer());
         Seller sellerThatIsFollowed = sellerRepository.create(DummyUtils.createSeller());
@@ -80,6 +83,7 @@ public class UserIntegrationTests {
     }
 
     @Test
+    @DisplayName("HAPPY PATH - Verifies that the amount of followers a seller has is retrieved correctly")
     public void testFollowersCountOK() throws Exception {
         Seller seller = sellerRepository.create(DummyUtils.createSeller());
 
@@ -97,6 +101,7 @@ public class UserIntegrationTests {
     }
 
     @Test
+    @DisplayName("HAPPY PATH - Verifies that the list of people that follow a seller is retrieved correctly")
     public void testFollowersListOK() throws Exception {
         Seller seller = sellerRepository.create(DummyUtils.createSeller());
 
@@ -136,6 +141,7 @@ public class UserIntegrationTests {
     }
 
     @Test
+    @DisplayName("HAPPY PATH - Verifies that the list of people an user follows is retrieved correctly")
     public void testFollowedListOK() throws Exception {
         Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
 
