@@ -46,10 +46,10 @@ class SellerPostServiceTest {
     @Test
     @DisplayName("T-0005: HAPPY PATH - Verify that order argument is handled correctly")
     void testFollowedSellersLatestPostsValidOrder(){
-        Integer sellerId = 1;
-        Seller seller = new Seller(sellerId, "seller");
-        String orderAsc = "date_asc";
-        String orderDesc = "date_desc";
+        Seller seller = DummyUtils.createSeller();
+        Integer sellerId = seller.getId();
+        String orderAsc = "DATE_ASC";
+        String orderDesc = "DATE_DESC";
 
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
@@ -62,11 +62,11 @@ class SellerPostServiceTest {
     @Test
     @DisplayName("T-0005: BAD REQUEST - Verify that exceptions are raised when invalid order parameter is given")
     void testFollowedSellersLatestPostsInvalidOrder() {
-        Integer sellerId = 1;
-        Seller seller = new Seller(sellerId, "seller");
-        String failOrderAsc = "asc";
-        String failOrderDesc = "desc";
-        String otherOrder = "empanada";
+        Seller seller = DummyUtils.createSeller();
+        Integer sellerId = seller.getId();
+        String failOrderAsc = "ASC";
+        String failOrderDesc = "DESC";
+        String otherOrder = "EMPANADA";
 
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
@@ -79,9 +79,9 @@ class SellerPostServiceTest {
     @Test
     @DisplayName("T-0006: HAPPY PATH - Verify that followed users list is sorted correctly")
     void testFollowedSellersLatestPostsOrder() {
-        String orderAsc = "date_asc";
-        String orderDesc = "date_desc";
-        String orderInvalid = "date_invalid";
+        String orderAsc = "DATE_ASC";
+        String orderDesc = "DATE_DESC";
+        String orderInvalid = "DATE_INVALID";
 
         List<SellerPostDTO> followedSellersPostsAsc = this.getFollowedSellersLatestPosts(orderAsc).getPosts();
         List<SellerPostDTO> followedSellersPostsDesc = this.getFollowedSellersLatestPosts(orderDesc).getPosts();
