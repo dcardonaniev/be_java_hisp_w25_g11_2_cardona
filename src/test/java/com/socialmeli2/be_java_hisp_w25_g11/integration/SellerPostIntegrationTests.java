@@ -32,7 +32,6 @@ import java.util.Set;
 
 import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.INVALID_DATE_ORDER_ARGUMENT;
 import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.NON_EXISTENT_USER;
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ValidationMessages.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

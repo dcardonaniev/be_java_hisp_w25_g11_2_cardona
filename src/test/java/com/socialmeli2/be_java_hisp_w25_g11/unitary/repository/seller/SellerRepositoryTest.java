@@ -56,7 +56,6 @@ class SellerRepositoryTest {
         sellerRepository.create(seller);
 
         Seller createdSeller = sellerRepository.get(seller.getId()).orElse(null);
-        int expectedMapSize = 1;
 
         assertEquals(seller, createdSeller);
     }

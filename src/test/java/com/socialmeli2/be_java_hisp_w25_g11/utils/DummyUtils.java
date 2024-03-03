@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class DummyUtils {
-    public static Faker faker = new Faker();
+    public static final Faker faker = new Faker();
 
     public static SellerPost createNewSellerPost(Seller seller) {
         return new SellerPost(

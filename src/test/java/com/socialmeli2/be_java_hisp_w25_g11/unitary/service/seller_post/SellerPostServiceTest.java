@@ -150,14 +150,13 @@ class SellerPostServiceTest {
         Seller seller = new Seller(sellerId, "seller");
         String orderAsc = "date_asc";
         String orderDesc = "date_desc";
-        String noOrder = null;
 
         when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
         when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
 
         Assertions.assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, orderAsc));
         Assertions.assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, orderDesc));
-        Assertions.assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, noOrder));
+        Assertions.assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, null));
     }
 
     //T-0005. Verificar que el tipo de ordenamiento por fecha exista(US-0009)
