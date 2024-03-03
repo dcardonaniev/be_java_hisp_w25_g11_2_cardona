@@ -95,7 +95,7 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
-    @DisplayName("THROWS BAD REQUEST - Verifies that the body of the create post request is valid")
+    @DisplayName("BAD REQUEST - Verifies that the body of the create post request is valid")
     public void testPostNewProductReturnsInvalidRequestFormat() throws Exception {
         String payloadJson = "{}";
 
@@ -145,7 +145,7 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
-    @DisplayName("THROWS BAD REQUEST - Verifies that the order parameter is valid")
+    @DisplayName("BAD REQUEST - Verifies that the order parameter is valid")
     public void testGetFollowedPostsListReturnsInvalidOrder() throws Exception {
         Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
         String invalidOrder = "RANDOM_WORD";
@@ -159,7 +159,7 @@ public class SellerPostIntegrationTests {
     }
 
     @Test
-    @DisplayName("THROWS NOT FOUND - Verifies that the supplied user id exists")
+    @DisplayName("NOT FOUND - Verifies that the supplied user id exists")
     public void testGetFollowedListsReturnsInvalidID() throws Exception {
         Integer invalidUserId = 100;
 

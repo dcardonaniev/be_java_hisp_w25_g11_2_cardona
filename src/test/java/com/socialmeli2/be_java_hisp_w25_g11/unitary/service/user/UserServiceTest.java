@@ -104,47 +104,6 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("T-0007: HAPPY PATH - Verify the amount of followers an user has is correct")
-    void testFollowersSellersCountOk() {
-        Integer sellerId = 1;
-        Seller seller = new Seller(sellerId,"SellerTest");
-        seller.setFollowers(Set.of(5,4,3,2,8));
-
-        when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
-
-        Integer followersAmountExpected = seller.getFollowers().size();
-        Integer followersAmountResult = userService.followersSellersCount(sellerId).getFollowersCount();
-
-        assertEquals(followersAmountExpected,followersAmountResult,
-                () -> String.format("El Seller con id %d tiene: %d y se esperan %d seguidores",sellerId,followersAmountResult,followersAmountExpected));
-    }
-
-    @Test
-    @DisplayName("T-0007: BAD REQUEST - Verify that user with provided ID is a seller")
-    void testFollowersSellersCountFailWithAnNoSeller() {
-        Integer buyerId = 1;
-        Buyer buyer = new Buyer(buyerId,"BuyerTest");
-
-        when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
-        when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
-
-        assertThrows(BadRequestException.class,() -> userService.followersSellersCount(buyerId));
-    }
-
-    @Test
-    @DisplayName("T-0007: NOT FOUND - Verify that user with provided ID exists")
-    void testFollowersSellersCountFailWithNotFoundSeller() {
-        Integer sellerId = 1;
-
-        when(sellerRepository.get(sellerId)).thenReturn(Optional.empty());
-        when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
-
-        Class<NotFoundException> exceptionExpected = NotFoundException.class;
-
-        assertThrows(exceptionExpected,() -> userService.followersSellersCount(sellerId));
-    }
-
-    @Test
     @DisplayName("T-0002: HAPPY PATH - Verify that unfollow functionality works correctly for sellers")
     void testSellerUnfollowOK() {
         Integer userId = 1;
@@ -357,5 +316,46 @@ class UserServiceTest {
         when(sellerRepository.get(nonExistentSellerId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> userService.sortFollowers(nonExistentSellerId, null));
+    }
+
+    @Test
+    @DisplayName("T-0007: HAPPY PATH - Verify the amount of followers an user has is correct")
+    void testFollowersSellersCountOk() {
+        Integer sellerId = 1;
+        Seller seller = new Seller(sellerId,"SellerTest");
+        seller.setFollowers(Set.of(5,4,3,2,8));
+
+        when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
+
+        Integer followersAmountExpected = seller.getFollowers().size();
+        Integer followersAmountResult = userService.followersSellersCount(sellerId).getFollowersCount();
+
+        assertEquals(followersAmountExpected,followersAmountResult,
+                () -> String.format("El Seller con id %d tiene: %d y se esperan %d seguidores",sellerId,followersAmountResult,followersAmountExpected));
+    }
+
+    @Test
+    @DisplayName("T-0007: BAD REQUEST - Verify that user with provided ID is a seller")
+    void testFollowersSellersCountFailWithAnNoSeller() {
+        Integer buyerId = 1;
+        Buyer buyer = new Buyer(buyerId,"BuyerTest");
+
+        when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
+        when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
+
+        assertThrows(BadRequestException.class,() -> userService.followersSellersCount(buyerId));
+    }
+
+    @Test
+    @DisplayName("T-0007: NOT FOUND - Verify that user with provided ID exists")
+    void testFollowersSellersCountFailWithNotFoundSeller() {
+        Integer sellerId = 1;
+
+        when(sellerRepository.get(sellerId)).thenReturn(Optional.empty());
+        when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
+
+        Class<NotFoundException> exceptionExpected = NotFoundException.class;
+
+        assertThrows(exceptionExpected,() -> userService.followersSellersCount(sellerId));
     }
 }
