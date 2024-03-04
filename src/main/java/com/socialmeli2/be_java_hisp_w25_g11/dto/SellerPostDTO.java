@@ -25,6 +25,7 @@ public class SellerPostDTO {
     @NotBlank(message = ValidationMessages.DATE_CANNOT_BE_EMPTY)
     @JsonProperty("date")
     private String date;
+
     @Valid
     @JsonProperty("product")
     private ProductDTO product;

@@ -23,7 +23,8 @@ public class BuyerRepositoryImp implements IBuyerRepository {
     @Override
     public List<Buyer> createAll(List<Buyer> entities) {
         entities.forEach(b -> buyers.put(b.getId(), b));
-        return entities;    }
+        return entities;
+    }
 
     @Override
     public Buyer create(Buyer buyer) {
@@ -61,7 +62,6 @@ public class BuyerRepositoryImp implements IBuyerRepository {
     public Boolean addFollowed(Buyer user, Integer userId) {
         user.getFollowed().add(userId);
         return update(user.getId(),user);
-
     }
 
     @Override

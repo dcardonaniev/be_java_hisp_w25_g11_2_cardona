@@ -22,7 +22,6 @@ public class ProductDTO {
     @JsonProperty("product_name")
     private String name;
 
-
     @NotBlank(message = ValidationMessages.TYPE_CANNOT_BE_EMPTY)
     @Size(message = ValidationMessages.TYPE_SIZE_LIMIT, max = 15)
     @Pattern(regexp = "^[a-zA-Z0-9 ]*$",message = ValidationMessages.TYPE_CONTAINS_SPECIAL_CHARACTERS)
