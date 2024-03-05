@@ -125,7 +125,7 @@ public class UserServiceImp implements IUserService {
             throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
         }
 
-        if (!(user.get() instanceof ISeller)) {
+        if (!user.get().canBeFollowed()) {
             throw new BadRequestException(ErrorMessages.build(USER_CANNOT_HAVE_FOLLOWERS, userId));
         }
 
