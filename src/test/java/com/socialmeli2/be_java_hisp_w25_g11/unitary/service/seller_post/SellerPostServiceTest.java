@@ -7,8 +7,7 @@ import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.BadRequestException;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.NotFoundException;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.UserRepositoryImp;
 import com.socialmeli2.be_java_hisp_w25_g11.service.seller_post.SellerPostServiceImp;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import org.junit.jupiter.api.DisplayName;
@@ -35,9 +34,7 @@ import static org.mockito.Mockito.when;
 class SellerPostServiceTest {
 
     @Mock
-    private SellerRepositoryImp sellerRepository;
-    @Mock
-    private BuyerRepositoryImp buyerRepository;
+    private UserRepositoryImp userRepository;
     @Mock
     private ModelMapper modelMapper;
     @InjectMocks
@@ -51,8 +48,7 @@ class SellerPostServiceTest {
         String orderAsc = "DATE_ASC";
         String orderDesc = "DATE_DESC";
 
-        when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
-        when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
+        when(userRepository.findById(sellerId)).thenReturn(Optional.of(seller));
 
         assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, orderAsc));
         assertDoesNotThrow(() -> sellerPostService.getFollowedSellersLatestPosts(sellerId, orderDesc));
@@ -68,8 +64,7 @@ class SellerPostServiceTest {
         String failOrderDesc = "DESC";
         String otherOrder = "EMPANADA";
 
-        when(sellerRepository.get(sellerId)).thenReturn(Optional.of(seller));
-        when(buyerRepository.get(sellerId)).thenReturn(Optional.empty());
+        when(userRepository.findById(sellerId)).thenReturn(Optional.of(seller));
 
         assertThrows(BadRequestException.class, () -> sellerPostService.getFollowedSellersLatestPosts(sellerId, failOrderAsc));
         assertThrows(BadRequestException.class, () -> sellerPostService.getFollowedSellersLatestPosts(sellerId, failOrderDesc));
@@ -128,7 +123,7 @@ class SellerPostServiceTest {
     void testFollowedSellersLatestPostsThrowsNotFound() {
         Integer buyerId = 1;
 
-        when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
+        when(userRepository.findById(buyerId)).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> sellerPostService.getFollowedSellersLatestPosts(buyerId, null));
     }
@@ -151,10 +146,9 @@ class SellerPostServiceTest {
 
         Buyer buyer = new Buyer(1, "Juan", followedSellers);
 
-        when(buyerRepository.get(buyerId)).thenReturn(Optional.of(buyer));
-        when(sellerRepository.get(buyerId)).thenReturn(Optional.empty());
-        when(sellerRepository.get(seller1.getId())).thenReturn(Optional.of(seller1));
-        when(sellerRepository.get(seller2.getId())).thenReturn(Optional.of(seller2));
+        when(userRepository.findById(buyerId)).thenReturn(Optional.of(buyer));
+        when(userRepository.findById(seller1.getId())).thenReturn(Optional.of(seller1));
+        when(userRepository.findById(seller2.getId())).thenReturn(Optional.of(seller2));
 
         lenient().when(modelMapper.map(post1, SellerPostDTO.class)).thenReturn(postDto1);
         lenient().when(modelMapper.map(post2, SellerPostDTO.class)).thenReturn(postDto2);

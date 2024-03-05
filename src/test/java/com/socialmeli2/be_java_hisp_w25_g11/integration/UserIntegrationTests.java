@@ -6,10 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.UserDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowedListDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.FollowerListDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.ISeller;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.IUser;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.IUserRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.SuccessMessages;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,25 +40,21 @@ public class UserIntegrationTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private IBuyerRepository buyerRepository;
-
-    @Autowired
-    private ISellerRepository sellerRepository;
+    private IUserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
 
     @BeforeEach
     public void repositorySetup() {
-        buyerRepository.clearData();
-        sellerRepository.clearData();
+        userRepository.clearData();
     }
 
     @Test
     @DisplayName("HAPPY PATH - Verifies that the follow functionality works correctly")
     public void testFollowOK() throws Exception {
-        Buyer userThatFollows = buyerRepository.create(DummyUtils.createBuyer());
-        Seller sellerThatIsFollowed = sellerRepository.create(DummyUtils.createSeller());
+        IUser userThatFollows =  userRepository.create(DummyUtils.createBuyer());
+        ISeller sellerThatIsFollowed =  (ISeller) userRepository.create(DummyUtils.createSeller());
 
         mockMvc.perform(post("/users/{userId}/follow/{userIdToFollow}", userThatFollows.getId(), sellerThatIsFollowed.getId()))
                 .andDo(print())
@@ -70,11 +65,11 @@ public class UserIntegrationTests {
     @Test
     @DisplayName("HAPPY PATH - Verifies that the unfollow functionality works correctly")
     public void testUnfollowOK() throws Exception {
-        Buyer userThatFollows = buyerRepository.create(DummyUtils.createBuyer());
-        Seller sellerThatIsFollowed = sellerRepository.create(DummyUtils.createSeller());
+        IUser userThatFollows =  userRepository.create(DummyUtils.createBuyer());
+        ISeller sellerThatIsFollowed =  (ISeller) userRepository.create(DummyUtils.createSeller());
 
-        buyerRepository.addFollowed(userThatFollows, sellerThatIsFollowed.getId());
-        sellerRepository.addFollower(sellerThatIsFollowed, userThatFollows.getId());
+         userRepository.addFollowed(userThatFollows.getId(), sellerThatIsFollowed.getId());
+         userRepository.addFollower(sellerThatIsFollowed.getId(), userThatFollows.getId());
 
         mockMvc.perform(post("/users/{userId}/unfollow/{userIdToFollow}", userThatFollows.getId(), sellerThatIsFollowed.getId()))
                 .andDo(print())
@@ -85,10 +80,10 @@ public class UserIntegrationTests {
     @Test
     @DisplayName("HAPPY PATH - Verifies that the amount of followers a seller has is retrieved correctly")
     public void testFollowersCountOK() throws Exception {
-        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        ISeller seller =  (ISeller) userRepository.create(DummyUtils.createSeller());
 
-        Buyer follower1 = buyerRepository.create(DummyUtils.createBuyer());
-        Buyer follower2 = buyerRepository.create(DummyUtils.createBuyer());
+        IUser follower1 =  userRepository.create(DummyUtils.createBuyer());
+        IUser follower2 =  userRepository.create(DummyUtils.createBuyer());
 
         seller.setFollowers(Set.of(follower1.getId(), follower2.getId()));
 
@@ -103,21 +98,19 @@ public class UserIntegrationTests {
     @Test
     @DisplayName("HAPPY PATH - Verifies that the list of people that follow a seller is retrieved correctly")
     public void testFollowersListOK() throws Exception {
-        Seller seller = sellerRepository.create(DummyUtils.createSeller());
-
-        Buyer follower1 = buyerRepository.create(DummyUtils.createBuyer());
-        Buyer follower2 = buyerRepository.create(DummyUtils.createBuyer());
+        ISeller seller = (ISeller) userRepository.create(DummyUtils.createSeller());
+        IUser follower1 = userRepository.create(DummyUtils.createBuyer());
+        IUser follower2 = userRepository.create(DummyUtils.createBuyer());
 
         seller.setFollowers(Set.of(follower1.getId(), follower2.getId()));
 
         List<UserDTO> expectedFollowerList = seller.getFollowers()
                 .stream()
                 .map(v -> {
-                    Optional<Buyer> foundBuyer = buyerRepository.get(v);
+                    Optional<IUser> foundBuyer =  userRepository.findById(v);
                     assertTrue(foundBuyer.isPresent());
-                    Buyer buyer = foundBuyer.get();
 
-                    return modelMapper.map(buyer, UserDTO.class);
+                    return modelMapper.map(foundBuyer.get(), UserDTO.class);
                 })
                 .toList();
 
@@ -143,19 +136,19 @@ public class UserIntegrationTests {
     @Test
     @DisplayName("HAPPY PATH - Verifies that the list of people an user follows is retrieved correctly")
     public void testFollowedListOK() throws Exception {
-        Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
+        IUser buyer =  userRepository.create(DummyUtils.createBuyer());
 
-        Seller followed1 = sellerRepository.create(DummyUtils.createSeller());
-        Seller followed2 = sellerRepository.create(DummyUtils.createSeller());
+        IUser followed1 =  userRepository.create(DummyUtils.createSeller());
+        IUser followed2 =  userRepository.create(DummyUtils.createSeller());
 
         buyer.setFollowed(Set.of(followed1.getId(), followed2.getId()));
 
         List<UserDTO> expectedFollowedList = buyer.getFollowed()
                 .stream()
                 .map(v -> {
-                    Optional<Seller> foundSeller = sellerRepository.get(v);
+                    Optional<IUser> foundSeller =  userRepository.findById(v);
                     assertTrue(foundSeller.isPresent());
-                    Seller seller = foundSeller.get();
+                    IUser seller = foundSeller.get();
 
                     return modelMapper.map(seller, UserDTO.class);
                 })
