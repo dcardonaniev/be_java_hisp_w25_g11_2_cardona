@@ -61,7 +61,7 @@ class SellerPostRepositoryTest {
             sellerPost.setPostId(1);
 
             sellerPostRepository.create(sellerPost);
-            Optional<SellerPost> result = sellerPostRepository.get(sellerPost.getPostId());
+            Optional<SellerPost> result = sellerPostRepository.findById(sellerPost.getPostId());
             assertTrue(result.isPresent());
 
             assertNotNull(result.get().getPostId());
@@ -75,7 +75,7 @@ class SellerPostRepositoryTest {
             sellerPost.setPostId(1);
             sellerPostRepository.create(sellerPost);
 
-            Optional<SellerPost> retrievedPost = sellerPostRepository.get(sellerPost.getPostId());
+            Optional<SellerPost> retrievedPost = sellerPostRepository.findById(sellerPost.getPostId());
 
             assertTrue(retrievedPost.isPresent());
             assertEquals(sellerPost, retrievedPost.get());
@@ -92,7 +92,7 @@ class SellerPostRepositoryTest {
             boolean result = sellerPostRepository.update(sellerPost.getPostId(), updatedPost);
 
             assertTrue(result);
-            Optional<SellerPost> retrievedPost = sellerPostRepository.get(sellerPost.getPostId());
+            Optional<SellerPost> retrievedPost = sellerPostRepository.findById(sellerPost.getPostId());
             assertTrue(retrievedPost.isPresent());
             assertEquals(updatedPost, retrievedPost.get());
         }
@@ -106,7 +106,7 @@ class SellerPostRepositoryTest {
             boolean result = sellerPostRepository.delete(sellerPost.getPostId());
 
             assertTrue(result);
-            Optional<SellerPost> retrievedPost = sellerPostRepository.get(sellerPost.getPostId());
+            Optional<SellerPost> retrievedPost = sellerPostRepository.findById(sellerPost.getPostId());
             assertTrue(retrievedPost.isEmpty());
         }
 
@@ -116,7 +116,7 @@ class SellerPostRepositoryTest {
             sellerPost.setPostId(1);
             sellerPostRepository.create(sellerPost);
 
-            Assertions.assertTrue(sellerPostRepository.exists(sellerPost.getPostId()));
-            Assertions.assertFalse(sellerPostRepository.exists(sellerPost.getPostId() + 1));
+            Assertions.assertTrue(sellerPostRepository.findById(sellerPost.getPostId()).isPresent());
+            Assertions.assertFalse(sellerPostRepository.findById(sellerPost.getPostId() + 1).isPresent());
         }
 }

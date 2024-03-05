@@ -3,15 +3,13 @@ package com.socialmeli2.be_java_hisp_w25_g11.service.seller_post;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.SellerPostDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Product;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.*;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.BadRequestException;
 import com.socialmeli2.be_java_hisp_w25_g11.exception.NotFoundException;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.ISellerPostRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.SellerPostRepositoryImp;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.IUserRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.UserRepositoryImp;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -25,28 +23,28 @@ import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.
 @Service
 public class SellerPostServiceImp implements ISellerPostService {
     private final ISellerPostRepository sellerPostRepository;
-    private final IBuyerRepository buyerRepository;
-    private final ISellerRepository sellerRepository;
+    private final IUserRepository userRepository;
     private final ModelMapper modelMapper;
 
     public SellerPostServiceImp(
-            ISellerPostRepository sellerPostRepository,
-            IBuyerRepository buyerRepository,
-            ISellerRepository sellerRepository,
+            SellerPostRepositoryImp sellerPostRepository,
+            UserRepositoryImp userRepository,
             ModelMapper modelMapper
     ) {
+        this.userRepository = userRepository;
         this.sellerPostRepository = sellerPostRepository;
-        this.buyerRepository = buyerRepository;
-        this.sellerRepository = sellerRepository;
         this.modelMapper = modelMapper;
     }
 
     @Override
     public SellerPostDTO createPost(CreatePostRequestDTO request) {
-        Optional<Seller> seller = sellerRepository.get(request.getUserId());
-        if (seller.isEmpty())
-            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_SELLER, request.getUserId()));
+        Optional<IUser> user = userRepository.findById(request.getUserId());
+        if (user.isEmpty())
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, request.getUserId()));
+        if (!user.get().canPost())
+            throw new BadRequestException(ErrorMessages.build(USER_CANNOT_CREATE_POSTS, request.getUserId()));
 
+        Seller seller = (Seller) user.get();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH);
         SellerPost sellerPost = new SellerPost(
                 request.getUserId(),
@@ -55,26 +53,22 @@ public class SellerPostServiceImp implements ISellerPostService {
                 modelMapper.map(request.getProduct(), Product.class),
                 request.getCategory(),
                 request.getPrice(),
-                seller.get()
+                seller
         );
 
         sellerPost = sellerPostRepository.create(sellerPost);
-        seller.get().getPosts().add(sellerPost);
+        seller.getPosts().add(sellerPost);
 
         return modelMapper.map(sellerPost, SellerPostDTO.class);
     }
 
     @Override
     public SellerPostsListDTO getFollowedSellersLatestPosts(Integer userId, String order) {
-        List<SellerPost> posts;
+        Optional<IUser> user = userRepository.findById(userId);
+        if (user.isEmpty())
+            throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_SELLER, userId));
 
-        Optional<Buyer> buyer = buyerRepository.get(userId);
-        Optional<Seller> seller = sellerRepository.get(userId);
-        if (buyer.isPresent())
-            posts = getMergedPostsList(buyer.get().getFollowed());
-        else if (seller.isPresent())
-            posts = getMergedPostsList(seller.get().getFollowed());
-        else throw new NotFoundException(ErrorMessages.build(NON_EXISTENT_USER, userId));
+        List<SellerPost> posts = getMergedPostsList(user.get().getFollowed());
 
         if (order == null) {
             return new SellerPostsListDTO(
@@ -103,16 +97,15 @@ public class SellerPostServiceImp implements ISellerPostService {
     }
 
     private List<SellerPost> getMergedPostsList(Set<Integer> followed) {
-        List<SellerPost> posts;
-        posts = followed
+        return followed
                 .stream()
                 .map(s -> {
-                    Optional<Seller> followedSeller = sellerRepository.get(s);
-                    if (followedSeller.isEmpty())
+                    Optional<IUser> followedUser = userRepository.findById(s);
+                    if (followedUser.isEmpty() || !followedUser.get().canPost())
                         throw new NotFoundException(ErrorMessages.build(SELLER_INFORMATION_NOT_FOUND, s));
+                    Seller seller = (Seller) followedUser.get();
 
-                    return followedSeller
-                            .get()
+                    return seller
                             .getPosts()
                             .stream()
                             .filter(p -> p.getDate().isAfter(LocalDate.now().minusWeeks(2)))
@@ -120,7 +113,5 @@ public class SellerPostServiceImp implements ISellerPostService {
                 })
                 .flatMap(List::stream)
                 .toList();
-
-        return posts;
     }
 }

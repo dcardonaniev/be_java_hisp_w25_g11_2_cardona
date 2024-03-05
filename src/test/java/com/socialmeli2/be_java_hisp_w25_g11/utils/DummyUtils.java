@@ -3,10 +3,7 @@ package com.socialmeli2.be_java_hisp_w25_g11.utils;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.SellerPostDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.ProductDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Product;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.*;
 import net.datafaker.Faker;
 
 import java.time.LocalDate;
@@ -15,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 public class DummyUtils {
     public static final Faker faker = new Faker();
 
-    public static SellerPost createSellerPost(Seller seller) {
+    public static SellerPost createSellerPost(ISeller seller) {
         return new SellerPost(
                 seller.getId(),
                 faker.number().positive(),
@@ -67,7 +64,7 @@ public class DummyUtils {
         );
     }
 
-    public static CreatePostRequestDTO createCreatePostRequestDTO(Seller seller) {
+    public static CreatePostRequestDTO createCreatePostRequestDTO(ISeller seller) {
         return new CreatePostRequestDTO(
                 seller.getId(),
                 LocalDate.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),

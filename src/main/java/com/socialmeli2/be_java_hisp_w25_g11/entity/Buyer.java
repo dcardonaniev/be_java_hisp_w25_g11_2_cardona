@@ -7,7 +7,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class Buyer {
+public class Buyer implements IUser {
     private Integer id;
     private String name;
     private Set<Integer> followed;

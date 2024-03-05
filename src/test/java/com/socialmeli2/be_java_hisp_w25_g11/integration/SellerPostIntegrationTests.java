@@ -6,12 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.SellerPostDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.request.CreatePostRequestDTO;
 import com.socialmeli2.be_java_hisp_w25_g11.dto.response.SellerPostsListDTO;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
-import com.socialmeli2.be_java_hisp_w25_g11.entity.SellerPost;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.*;
 import com.socialmeli2.be_java_hisp_w25_g11.repository.seller_post.ISellerPostRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.IUserRepository;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ValidationMessages;
@@ -31,8 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.INVALID_DATE_ORDER_ARGUMENT;
-import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.NON_EXISTENT_USER;
+import static com.socialmeli2.be_java_hisp_w25_g11.utils.messages.ErrorMessages.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -52,10 +48,7 @@ public class SellerPostIntegrationTests {
     private ISellerPostRepository sellerPostRepository;
 
     @Autowired
-    private IBuyerRepository buyerRepository;
-
-    @Autowired
-    private ISellerRepository sellerRepository;
+    private IUserRepository userRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -63,14 +56,13 @@ public class SellerPostIntegrationTests {
     @BeforeEach
     public void repositorySetup() {
         sellerPostRepository.clearData();
-        buyerRepository.clearData();
-        sellerRepository.clearData();
+        userRepository.clearData();
     }
 
     @Test
     @DisplayName("HAPPY PATH - Verifies that the endpoint for creating a new post works correctly")
     public void testPostNewProductOK() throws Exception {
-        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        ISeller seller = (ISeller) userRepository.create(DummyUtils.createSeller());
 
         CreatePostRequestDTO payloadDTO = DummyUtils.createCreatePostRequestDTO(seller);
         SellerPostDTO responseDTO = modelMapper.map(payloadDTO, SellerPostDTO.class);
@@ -116,8 +108,8 @@ public class SellerPostIntegrationTests {
     @Test
     @DisplayName("HAPPY PATH - Verifies that list of followed sellers' posts is returned correctly")
     public void testGetFollowedPostsListOK() throws Exception {
-        Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
-        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        IUser buyer = userRepository.create(DummyUtils.createBuyer());
+        ISeller seller = (ISeller) userRepository.create(DummyUtils.createSeller());
         buyer.setFollowed(Set.of(seller.getId()));
         seller.setFollowers(Set.of(buyer.getId()));
 
@@ -147,7 +139,7 @@ public class SellerPostIntegrationTests {
     @Test
     @DisplayName("BAD REQUEST - Verifies that the order parameter is valid")
     public void testGetFollowedPostsListReturnsInvalidOrder() throws Exception {
-        Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
+        IUser buyer = userRepository.create(DummyUtils.createBuyer());
         String invalidOrder = "RANDOM_WORD";
 
         mockMvc.perform((get("/products/followed/{userId}/list", buyer.getId()))
@@ -167,6 +159,6 @@ public class SellerPostIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value(ErrorMessages.build(NON_EXISTENT_USER, invalidUserId)));
+                .andExpect(jsonPath("$.message").value(ErrorMessages.build(NON_EXISTENT_SELLER, invalidUserId)));
     }
 }

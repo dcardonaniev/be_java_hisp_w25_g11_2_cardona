@@ -38,13 +38,13 @@ public class SellerPostRepositoryImp implements ISellerPostRepository {
     }
 
     @Override
-    public Optional<SellerPost> get(Integer id) {
+    public Optional<SellerPost> findById(Integer id) {
         return Optional.ofNullable(sellerPosts.get(id));
     }
 
     @Override
     public boolean update(Integer id, SellerPost sellerPost) {
-        if (get(id).isEmpty()) {
+        if (findById(id).isEmpty()) {
             return false;
         }
 
@@ -55,11 +55,6 @@ public class SellerPostRepositoryImp implements ISellerPostRepository {
     @Override
     public boolean delete(Integer id) {
         return sellerPosts.remove(id) != null;
-    }
-
-    @Override
-    public boolean exists(Integer id) {
-        return sellerPosts.containsKey(id);
     }
 
     @Override

@@ -14,5 +14,5 @@ public class SellerPost {
     private Product product;
     private Integer Category;
     private Double price;
-    private Seller seller;
+    private ISeller seller;
 }

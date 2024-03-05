@@ -1,8 +1,9 @@
 package com.socialmeli2.be_java_hisp_w25_g11.unitary.repository.buyer;
 
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Buyer;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.BuyerRepositoryImp;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.buyer.IBuyerRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.IUser;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.IUserRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.UserRepositoryImp;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,23 +14,23 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BuyerRepositoryTest {
-    private IBuyerRepository buyerRepository;
+    private IUserRepository userRepository;
 
     @BeforeEach
     void setup() {
-        buyerRepository = new BuyerRepositoryImp();
+        userRepository = new UserRepositoryImp();
     }
 
     @Test
     void testGetAllOk() {
-        List<Buyer> buyers = List.of(
+        List<IUser> buyers = List.of(
                 DummyUtils.createBuyer(),
                 DummyUtils.createBuyer(),
                 DummyUtils.createBuyer()
         );
 
-        buyerRepository.createAll(buyers);
-        List<Buyer> actualBuyers = buyerRepository.getAll();
+        userRepository.createAll(buyers);
+        List<IUser> actualBuyers = userRepository.getAll();
 
         assertEquals(buyers.size(), actualBuyers.size());
         assertTrue(actualBuyers.containsAll(buyers));
@@ -37,14 +38,14 @@ class BuyerRepositoryTest {
 
     @Test
     void testCreateAllOK() {
-        List<Buyer> buyers = List.of(
+        List<IUser> buyers = List.of(
                 DummyUtils.createBuyer(),
                 DummyUtils.createBuyer(),
                 DummyUtils.createBuyer()
         );
 
-        buyerRepository.createAll(buyers);
-        List<Buyer> actualBuyers = buyerRepository.getAll();
+        userRepository.createAll(buyers);
+        List<IUser> actualBuyers = userRepository.getAll();
 
         assertEquals(buyers.size(), actualBuyers.size());
         assertTrue(actualBuyers.containsAll(buyers));
@@ -52,20 +53,20 @@ class BuyerRepositoryTest {
 
     @Test
     void testCreateBuyerOk() {
-        Buyer buyer = DummyUtils.createBuyer();
-        buyerRepository.create(buyer);
+        IUser buyer = DummyUtils.createBuyer();
+        userRepository.create(buyer);
 
-        Buyer actualBuyer = buyerRepository.get(buyer.getId()).orElse(null);
+        IUser actualBuyer = userRepository.findById(buyer.getId()).orElse(null);
 
         assertEquals(buyer, actualBuyer);
     }
 
     @Test
     void testGetBuyerOk() {
-        Buyer buyer = DummyUtils.createBuyer();
-        buyerRepository.create(buyer);
+        IUser buyer = DummyUtils.createBuyer();
+        userRepository.create(buyer);
 
-        Optional<Buyer> foundBuyer = buyerRepository.get(buyer.getId());
+        Optional<IUser> foundBuyer = userRepository.findById(buyer.getId());
 
         assertTrue(foundBuyer.isPresent());
         assertEquals(buyer, foundBuyer.get());
@@ -73,12 +74,12 @@ class BuyerRepositoryTest {
 
     @Test
     void testUpdateBuyerOK() {
-        Buyer buyer = DummyUtils.createBuyer();
-        buyerRepository.create(buyer);
+        IUser buyer = DummyUtils.createBuyer();
+        userRepository.create(buyer);
 
         Buyer newSeller = DummyUtils.createBuyer();
-        buyerRepository.update(buyer.getId(), newSeller);
-        Optional<Buyer> foundBuyer = buyerRepository.get(buyer.getId());
+        userRepository.update(buyer.getId(), newSeller);
+        Optional<IUser> foundBuyer = userRepository.findById(buyer.getId());
 
         assertTrue(foundBuyer.isPresent());
         assertEquals(newSeller, foundBuyer.get());
@@ -86,32 +87,32 @@ class BuyerRepositoryTest {
 
     @Test
     void testUpdateBuyerReturnsNonExistent() {
-        Buyer buyer = buyerRepository.create(DummyUtils.createBuyer());
+        IUser buyer = userRepository.create(DummyUtils.createBuyer());
         Integer nonExistentId = 1;
 
-        assertFalse(buyerRepository.update(nonExistentId, buyer));
+        assertFalse(userRepository.update(nonExistentId, buyer));
     }
 
     @Test
     void testDeleteBuyerOK() {
         Buyer buyer = DummyUtils.createBuyer();
-        buyerRepository.create(buyer);
+        userRepository.create(buyer);
 
-        assertEquals(1, buyerRepository.getAll().size());
-        buyerRepository.delete(buyer.getId());
-        Optional<Buyer> foundBuyer = buyerRepository.get(buyer.getId());
+        assertEquals(1, userRepository.getAll().size());
+        userRepository.delete(buyer.getId());
+        Optional<IUser> foundBuyer = userRepository.findById(buyer.getId());
 
         assertTrue(foundBuyer.isEmpty());
-        assertEquals(0, buyerRepository.getAll().size());
+        assertEquals(0, userRepository.getAll().size());
     }
 
     @Test
     void testExistingBuyerOK() {
         Buyer buyer = DummyUtils.createBuyer();
         Integer nonExistentId = 0;
-        buyerRepository.create(buyer);
+        userRepository.create(buyer);
 
-        assertTrue(buyerRepository.exists(buyer.getId()));
-        assertFalse(buyerRepository.exists(nonExistentId));
+        assertTrue(userRepository.findById(buyer.getId()).isPresent());
+        assertFalse(userRepository.findById(nonExistentId).isPresent());
     }
 }

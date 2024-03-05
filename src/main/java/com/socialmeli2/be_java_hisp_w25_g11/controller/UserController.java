@@ -31,7 +31,7 @@ public class UserController {
     public ResponseEntity<FollowerCountDTO> followersCount(
         @PathVariable Integer userId
     ) {
-        return new ResponseEntity<>(userService.followersSellersCount(userId), HttpStatus.OK);
+        return new ResponseEntity<>(userService.getSellerFollowersCount(userId), HttpStatus.OK);
     }
 
     @GetMapping("/{userId}/followers/list")
@@ -39,7 +39,7 @@ public class UserController {
         @PathVariable Integer userId,
         @RequestParam(required = false) String order
     ) {
-        return ResponseEntity.ok(this.userService.sortFollowers(userId, order));
+        return ResponseEntity.ok(this.userService.getFollowersInfo(userId, order));
     }
 
     @GetMapping("/{userId}/followed/list")
@@ -47,7 +47,7 @@ public class UserController {
         @PathVariable Integer userId,
         @RequestParam(required = false) String order
     ) {
-        return ResponseEntity.ok(this.userService.sortFollowed(userId, order));
+        return ResponseEntity.ok(this.userService.getFollowedInfo(userId, order));
     }
 
     @PostMapping("/{userId}/unfollow/{userIdToUnfollow}")

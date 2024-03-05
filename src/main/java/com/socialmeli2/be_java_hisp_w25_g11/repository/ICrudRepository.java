@@ -7,9 +7,8 @@ public interface ICrudRepository <T, ID> {
     List<T> getAll();
     List<T> createAll(List<T> entities);
     T create(T user);
-    Optional<T> get(ID id);
+    Optional<T> findById(ID id);
     boolean update(ID id, T user);
     boolean delete(ID id);
-    boolean exists(ID id);
     void clearData();
 }

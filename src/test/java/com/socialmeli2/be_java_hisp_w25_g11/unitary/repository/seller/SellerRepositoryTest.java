@@ -1,8 +1,10 @@
 package com.socialmeli2.be_java_hisp_w25_g11.unitary.repository.seller;
 
+import com.socialmeli2.be_java_hisp_w25_g11.entity.ISeller;
+import com.socialmeli2.be_java_hisp_w25_g11.entity.IUser;
 import com.socialmeli2.be_java_hisp_w25_g11.entity.Seller;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.ISellerRepository;
-import com.socialmeli2.be_java_hisp_w25_g11.repository.seller.SellerRepositoryImp;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.IUserRepository;
+import com.socialmeli2.be_java_hisp_w25_g11.repository.user.UserRepositoryImp;
 import com.socialmeli2.be_java_hisp_w25_g11.utils.DummyUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,24 +14,24 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class SellerRepositoryTest {
-    private ISellerRepository sellerRepository;
+class userRepositoryTest {
+    private IUserRepository userRepository;
 
     @BeforeEach
     public void setup() {
-        sellerRepository = new SellerRepositoryImp();
+        userRepository = new UserRepositoryImp();
     }
 
     @Test
     void testGetAllOK() {
-        List<Seller> sellers = List.of(
+        List<IUser> sellers = List.of(
                 DummyUtils.createSeller(),
                 DummyUtils.createSeller(),
                 DummyUtils.createSeller()
         );
 
-        sellerRepository.createAll(sellers);
-        List<Seller> actualSellers = sellerRepository.getAll();
+        userRepository.createAll(sellers);
+        List<IUser> actualSellers = userRepository.getAll();
 
         assertEquals(sellers.size(), actualSellers.size());
         assertTrue(actualSellers.containsAll(sellers));
@@ -37,14 +39,14 @@ class SellerRepositoryTest {
 
     @Test
     void testCreateAllOK() {
-        List<Seller> sellers = List.of(
+        List<IUser> sellers = List.of(
                 DummyUtils.createSeller(),
                 DummyUtils.createSeller(),
                 DummyUtils.createSeller()
         );
 
-        sellerRepository.createAll(sellers);
-        List<Seller> actualSellers = sellerRepository.getAll();
+        userRepository.createAll(sellers);
+        List<IUser> actualSellers = userRepository.getAll();
 
         assertEquals(sellers.size(), actualSellers.size());
         assertTrue(actualSellers.containsAll(sellers));
@@ -52,20 +54,20 @@ class SellerRepositoryTest {
 
     @Test
     void testCreateSellerOK() {
-        Seller seller = DummyUtils.createSeller();
-        sellerRepository.create(seller);
+        IUser seller = DummyUtils.createSeller();
+        userRepository.create(seller);
 
-        Seller createdSeller = sellerRepository.get(seller.getId()).orElse(null);
+        IUser createdSeller = userRepository.findById(seller.getId()).orElse(null);
 
         assertEquals(seller, createdSeller);
     }
 
     @Test
     void testGetSellerOK() {
-        Seller seller = new Seller(10, "Danis");
-        sellerRepository.create(seller);
+        IUser seller = new Seller(10, "Danis");
+        userRepository.create(seller);
 
-        Optional<Seller> foundSeller = sellerRepository.get(seller.getId());
+        Optional<IUser> foundSeller = userRepository.findById(seller.getId());
 
         assertTrue(foundSeller.isPresent());
         assertEquals(seller, foundSeller.get());
@@ -73,12 +75,12 @@ class SellerRepositoryTest {
 
     @Test
     void testUpdateSellerOK() {
-        Seller seller = DummyUtils.createSeller();
-        sellerRepository.create(seller);
+        IUser seller = DummyUtils.createSeller();
+        userRepository.create(seller);
 
-        Seller newSeller = DummyUtils.createSeller();
-        sellerRepository.update(seller.getId(), newSeller);
-        Optional<Seller> foundSeller = sellerRepository.get(seller.getId());
+        IUser newSeller = DummyUtils.createSeller();
+        userRepository.update(seller.getId(), newSeller);
+        Optional<IUser> foundSeller = userRepository.findById(seller.getId());
 
         assertTrue(foundSeller.isPresent());
         assertEquals(newSeller, foundSeller.get());
@@ -86,41 +88,41 @@ class SellerRepositoryTest {
 
     @Test
     void testUpdateSellerReturnsInexistant() {
-        Seller seller = sellerRepository.create(DummyUtils.createSeller());
+        IUser seller = userRepository.create(DummyUtils.createSeller());
         Integer inexistantId = 1;
 
-        assertFalse(sellerRepository.update(inexistantId, seller));
+        assertFalse(userRepository.update(inexistantId, seller));
     }
 
     @Test
     void testDeleteSellerOK() {
-        Seller seller = DummyUtils.createSeller();
-        sellerRepository.create(seller);
+        IUser seller = DummyUtils.createSeller();
+        userRepository.create(seller);
 
-        assertEquals(1, sellerRepository.getAll().size());
-        sellerRepository.delete(seller.getId());
-        Optional<Seller> foundSeller = sellerRepository.get(seller.getId());
+        assertEquals(1, userRepository.getAll().size());
+        userRepository.delete(seller.getId());
+        Optional<IUser> foundSeller = userRepository.findById(seller.getId());
 
         assertTrue(foundSeller.isEmpty());
-        assertEquals(0, sellerRepository.getAll().size());
+        assertEquals(0, userRepository.getAll().size());
     }
 
     @Test
     void testExistingSellerOK() {
-        Seller seller = DummyUtils.createSeller();
+        IUser seller = DummyUtils.createSeller();
         Integer nonExistentId = 0;
-        sellerRepository.create(seller);
+        userRepository.create(seller);
 
-        assertTrue(sellerRepository.exists(seller.getId()));
-        assertFalse(sellerRepository.exists(nonExistentId));
+        assertTrue(userRepository.findById(seller.getId()).isPresent());
+        assertFalse(userRepository.findById(nonExistentId).isPresent());
     }
 
     @Test
     public void testAddFollowedOK() {
-        Seller seller = sellerRepository.create(DummyUtils.createSeller());
-        Seller followedSeller = DummyUtils.createSeller();
+        IUser seller = userRepository.create(DummyUtils.createSeller());
+        IUser followedSeller = DummyUtils.createSeller();
 
-        sellerRepository.addFollowed(seller, followedSeller.getId());
+        userRepository.addFollowed(seller.getId(), followedSeller.getId());
 
         assertEquals(1, seller.getFollowed().size());
         assertTrue(seller.getFollowed().contains(followedSeller.getId()));
@@ -128,14 +130,14 @@ class SellerRepositoryTest {
 
     @Test
     public void testRemoveFollowedOK() {
-        Seller seller = sellerRepository.create(DummyUtils.createSeller());
-        Seller followedSeller = DummyUtils.createSeller();
+        IUser seller = userRepository.create(DummyUtils.createSeller());
+        IUser followedSeller = DummyUtils.createSeller();
 
-        sellerRepository.create(seller);
-        sellerRepository.addFollowed(seller, followedSeller.getId());
+        userRepository.create(seller);
+        userRepository.addFollowed(seller.getId(), followedSeller.getId());
         assertEquals(1, seller.getFollowed().size());
 
-        sellerRepository.removeFollowed(seller, followedSeller.getId());
-        assertEquals(0, seller.getFollowers().size());
+        userRepository.removeFollowed(seller.getId(), followedSeller.getId());
+        assertEquals(0, ((ISeller) seller).getFollowers().size());
     }
 }
